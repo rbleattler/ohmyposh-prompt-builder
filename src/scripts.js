@@ -56,57 +56,64 @@ function resetToDefault() {
 
 // Function to handle the resizable divider
 function initResizable() {
-    const resizeHandle = document.getElementById('resize-handle');
+    const verticalHandle = document.getElementById('vertical-resize-handle');
+    const horizontalHandle = document.getElementById('horizontal-resize-handle');
     const jsonEditor = document.getElementById('json-editor');
     const themePreview = document.getElementById('theme-preview');
-    const terminal = document.querySelector('.terminal');
+    const topPane = document.getElementById('top-pane');
+    const bottomPane = document.getElementById('bottom-pane');
 
-    let isResizing = false;
+    let isResizingVertical = false;
+    let isResizingHorizontal = false;
 
-    // Mouse down event listener
-    resizeHandle.addEventListener('mousedown', (e) => {
-        isResizing = true;
-        resizeHandle.classList.add('active');
+    // Vertical resize
+    verticalHandle.addEventListener('mousedown', (e) => {
+        isResizingVertical = true;
+        verticalHandle.classList.add('active');
         document.body.style.cursor = 'col-resize';
-        // Prevent text selection during resize
         document.body.style.userSelect = 'none';
         e.preventDefault();
     });
 
-    // Mouse move event listener - use window for better tracking
+    // Horizontal resize
+    horizontalHandle.addEventListener('mousedown', (e) => {
+        isResizingHorizontal = true;
+        horizontalHandle.classList.add('active');
+        document.body.style.cursor = 'row-resize';
+        document.body.style.userSelect = 'none';
+        e.preventDefault();
+    });
+
     window.addEventListener('mousemove', (e) => {
-        if (!isResizing) return;
+        if (isResizingVertical) {
+            const containerWidth = window.innerWidth;
+            const percentage = (e.clientX / containerWidth) * 100;
 
-        // Calculate the percentage width
-        const containerWidth = window.innerWidth;
-        const percentage = (e.clientX / containerWidth) * 100;
-
-        // Constrain the resize (don't allow panes to get too small)
-        if (percentage > 20 && percentage < 80) {
-            jsonEditor.style.flex = `0 0 ${percentage}%`;
-            themePreview.style.flex = `0 0 ${100 - percentage - 1}%`; // Reserve 1% for the handle
-
-            // Ensure the resize handle stays visible
-            resizeHandle.style.display = 'block';
-
-            // Make sure the terminal properly fits the preview pane
-            if (terminal) {
-                terminal.style.width = '95%';
-                terminal.style.height = '95%';
+            if (percentage > 20 && percentage < 80) {
+                jsonEditor.style.flex = `0 0 ${percentage}%`;
+                themePreview.style.flex = `0 0 ${100 - percentage - 1}%`;
+                if (editor) editor.layout();
             }
+        }
 
-            // Trigger Monaco editor resize if it exists
-            if (editor) {
-                editor.layout();
+        if (isResizingHorizontal) {
+            const containerHeight = window.innerHeight;
+            const percentage = (e.clientY / containerHeight) * 100;
+
+            if (percentage > 20 && percentage < 80) {
+                topPane.style.height = `${percentage}%`;
+                bottomPane.style.height = `${100 - percentage - 1}%`;
+                if (editor) editor.layout();
             }
         }
     });
 
-    // Mouse up event listener - use window for better tracking
     window.addEventListener('mouseup', () => {
-        if (isResizing) {
-            isResizing = false;
-            resizeHandle.classList.remove('active');
+        if (isResizingVertical || isResizingHorizontal) {
+            isResizingVertical = false;
+            isResizingHorizontal = false;
+            verticalHandle.classList.remove('active');
+            horizontalHandle.classList.remove('active');
             document.body.style.cursor = '';
             document.body.style.userSelect = '';
         }
@@ -302,3 +309,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Initialize the visual builder component once the Monaco editor is ready
+window.onMonacoEditorReady = function() {
+    // The visual builder will be initialized by its own script
+    console.log('Monaco editor is ready, visual builder can now be initialized.');
+};

@@ -1,9 +1,69 @@
+/* Base layout */
 body {
     display: flex;
+    flex-direction: column;
     height: 100vh;
     margin: 0;
     overflow: hidden;
 }
+
+#top-pane {
+    display: flex;
+    flex-direction: column;
+    height: 60%;
+    min-height: 200px;
+    overflow: hidden;
+}
+
+.horizontal-split {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+#bottom-pane {
+    height: 40%;
+    min-height: 200px;
+    overflow: hidden;
+}
+
+/* Resize handles */
+#vertical-resize-handle {
+    width: 10px;
+    background-color: #ccc;
+    cursor: col-resize;
+    transition: background-color 0.2s;
+}
+
+#horizontal-resize-handle {
+    height: 10px;
+    background-color: #ccc;
+    cursor: row-resize;
+    transition: background-color 0.2s;
+}
+
+#vertical-resize-handle:hover,
+#vertical-resize-handle.active,
+#horizontal-resize-handle:hover,
+#horizontal-resize-handle.active {
+    background-color: #4CAF50;
+}
+
+/* Panel styles */
+#json-editor, #theme-preview {
+    flex: 1;
+    overflow: auto;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+#visual-builder {
+    height: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    overflow: auto;
+}
+
 #json-editor, #theme-preview {
     flex: 1;
     padding: 10px;
@@ -172,4 +232,212 @@ button:hover {
 /* Special styling for different prompt styles */
 .powerline-separator {
     font-size: 1.2em;
+}
+
+/* Tab styling */
+#editor-tabs {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.tab-button {
+    padding: 10px 20px;
+    background-color: #f0f0f0;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+}
+
+.tab-button.active {
+    border-bottom: 2px solid #007bff;
+    background-color: #e0e0e0;
+}
+
+.editor-panel {
+    display: none;
+    height: 100%;
+}
+
+.editor-panel.active {
+    display: block;
+}
+
+/* Visual Builder styles */
+.builder-container {
+    display: flex;
+    height: 80%;
+}
+
+.blocks-container, .segments-container {
+    flex: 1;
+    padding: 10px;
+    border-right: 1px solid #ccc;
+    overflow-y: auto;
+}
+
+.properties-panel {
+    flex: 2;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.draggable-list {
+    min-height: 200px;
+    border: 1px dashed #ccc;
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+.draggable {
+    margin-bottom: 8px;
+    padding: 8px;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: move;
+}
+
+.draggable:hover {
+    background-color: #f0f0f0;
+}
+
+.block-item, .segment-item {
+    position: relative;
+}
+
+.block-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.block-actions, .segment-actions {
+    display: flex;
+}
+
+.edit-button, .delete-button {
+    margin-left: 5px;
+    font-size: 12px;
+    padding: 2px 5px;
+}
+
+.add-button {
+    width: 100%;
+    padding: 8px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.add-button:hover {
+    background-color: #0069d9;
+}
+
+.segment-preview {
+    margin: 5px 0;
+    height: 20px;
+    background-color: #ddd;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 60%;
+    max-width: 600px;
+}
+
+.close-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-modal:hover {
+    color: black;
+}
+
+.modal-buttons {
+    margin-top: 15px;
+    text-align: right;
+}
+
+.save-button {
+    background-color: #28a745;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.cancel-button {
+    background-color: #6c757d;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Form styles */
+form label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: bold;
+}
+
+form input[type="text"],
+form select,
+form textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.color-picker-container {
+    margin-top: 10px;
+}
+
+/* Drag and Drop styles */
+.gu-mirror {
+    position: fixed !important;
+    margin: 0 !important;
+    z-index: 9999 !important;
+    opacity: 0.8;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.gu-hide {
+    display: none !important;
+}
+
+.gu-unselectable {
+    user-select: none !important;
+}
+
+.gu-transit {
+    opacity: 0.4;
+    background-color: #e0e0e0;
 }

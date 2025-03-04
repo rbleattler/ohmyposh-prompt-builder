@@ -13,22 +13,9 @@ This repository contains the source code for a visual prompt builder for [oh-my-
 
 ## TODO
 
-### Priority
+All files in the `.tasks` directory are readme files which include information about tasks which need to be completed. The tasks are categorized by priority (a number) where 0 is the highest priority and all numbers above 0 are lower priority. The priority will be the first part of the name of the file, followed by an `_`, then the name of the task (also underscore separated). The file extension will be `.md`. When a task is completed, it should be moved to the `./tasks/archive` directory.
 
-- [ ] Further enhance the oh-my-posh theme rendering
-  - [ ] Add support for more segment types
-  - [ ] Improve PowerLine character rendering
-  - [ ] Add support for custom templates
-
-### Lower Priority
-
-- [ ] Add visual builder capabilities
-  - [ ] Create UI components for editing blocks and segments
-  - [ ] Add drag-and-drop functionality for rearranging segments
-  - [ ] Add color picker for selecting colors
-- [ ] Add documentation
-  - [ ] User guide
-  - [ ] Development guide
+See the `.tasks` directory for current tasks.
 
 ## DONE
 

@@ -6,40 +6,139 @@
     <title>Oh My Posh Profile Builder</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/loader.min.js"></script>
+    <!-- Add color picker library -->
+    <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css">
+    <!-- Add dragula for drag and drop -->
+    <script src="https://cdn.jsdelivr.net/npm/dragula/dist/dragula.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dragula/dist/dragula.min.css">
 </head>
 <body>
-    <div id="json-editor">
-        <h2>JSON Editor</h2>
-        <div id="monaco-editor" style="width: 100%; height: 80%;"></div>
-        <div class="button-group">
-            <button id="update-preview">Update Preview</button>
-            <button id="import-json">Import JSON</button>
-            <button id="export-json">Export JSON</button>
-            <button id="export-theme">Export Theme</button>
-            <button id="reset-json">Reset to Default</button>
+    <div id="top-pane">
+        <div id="editor-tabs">
+            <button class="tab-button active" data-tab="json-editor">JSON Editor</button>
+            <button class="tab-button" data-tab="theme-preview">Theme Preview</button>
         </div>
-    </div>
-    <div id="resize-handle"></div>
-    <div id="theme-preview">
-        <div class="terminal">
-            <div class="terminal-header">
-                <div class="buttons">
-                    <span class="close"></span>
-                    <span class="minimize"></span>
-                    <span class="maximize"></span>
+
+        <div class="horizontal-split">
+            <div id="json-editor" class="editor-panel active">
+                <h2>JSON Editor</h2>
+                <div id="monaco-editor" style="width: 100%; height: 80%;"></div>
+                <div class="button-group">
+                    <button id="update-preview">Update Preview</button>
+                    <button id="import-json">Import JSON</button>
+                    <button id="export-json">Export JSON</button>
+                    <button id="export-theme">Export Theme</button>
+                    <button id="reset-json">Reset to Default</button>
                 </div>
-                <div class="title">Terminal</div>
-                <div></div>
             </div>
-            <div class="terminal-body" id="terminal-body">
-                <!-- Terminal content goes here -->
-                <div class="prompt">Welcome to Oh My Posh Profile Builder</div>
-                <div class="prompt">Import or create a config to get started</div>
+
+            <div id="vertical-resize-handle"></div>
+
+            <div id="theme-preview" class="editor-panel">
+                <div class="terminal">
+                    <div class="terminal-header">
+                        <div class="buttons">
+                            <span class="close"></span>
+                            <span class="minimize"></span>
+                            <span class="maximize"></span>
+                        </div>
+                        <div class="title">Terminal</div>
+                        <div></div>
+                    </div>
+                    <div class="terminal-body" id="terminal-body">
+                        <!-- Terminal content goes here -->
+                        <div class="prompt">Welcome to Oh My Posh Profile Builder</div>
+                        <div class="prompt">Import or create a config to get started</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+    <div id="horizontal-resize-handle"></div>
+
+    <div id="bottom-pane">
+        <div id="visual-builder">
+            <h2>Visual Builder</h2>
+            <div class="builder-container">
+                <div class="blocks-container">
+                    <h3>Blocks</h3>
+                    <div id="blocks-list" class="draggable-list"></div>
+                    <button id="add-block" class="add-button">+ Add Block</button>
+                </div>
+
+                <div class="segments-container">
+                    <h3>Segments</h3>
+                    <div id="segments-list" class="draggable-list"></div>
+                    <button id="add-segment" class="add-button">+ Add Segment</button>
+                </div>
+
+                <div class="properties-panel">
+                    <h3>Properties</h3>
+                    <div id="properties-form"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Templates for dynamic content -->
+    <template id="block-template">
+        <div class="block-item draggable">
+            <div class="block-header">
+                <span class="block-title"></span>
+                <div class="block-actions">
+                    <button class="edit-button">Edit</button>
+                    <button class="delete-button">Delete</button>
+                </div>
+            </div>
+            <div class="block-segments"></div>
+        </div>
+    </template>
+
+    <template id="segment-template">
+        <div class="segment-item draggable">
+            <span class="segment-type"></span>
+            <div class="segment-preview"></div>
+            <div class="segment-actions">
+                <button class="edit-button">Edit</button>
+                <button class="delete-button">Delete</button>
+            </div>
+        </div>
+    </template>
+
+    <!-- Modals -->
+    <div id="block-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Edit Block</h3>
+            <form id="block-form">
+                <!-- Will be populated dynamically -->
+            </form>
+            <div class="modal-buttons">
+                <button id="save-block" class="save-button">Save</button>
+                <button class="cancel-button">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="segment-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Edit Segment</h3>
+            <form id="segment-form">
+                <!-- Will be populated dynamically -->
+            </form>
+            <div class="modal-buttons">
+                <button id="save-segment" class="save-button">Save</button>
+                <button class="cancel-button">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Load the Oh My Posh renderer first -->
     <script src="oh-my-posh-renderer.js"></script>
     <script src="scripts.js"></script>
+    <script src="visual-builder.js"></script>
 </body>
 </html>

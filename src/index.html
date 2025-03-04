@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oh My Posh Profile Builder</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/loader.min.js"></script>
+</head>
+<body>
+    <div id="json-editor">
+        <h2>JSON Editor</h2>
+        <div id="monaco-editor" style="width: 100%; height: 80%;"></div>
+        <div class="button-group">
+            <button id="update-preview">Update Preview</button>
+            <button id="import-json">Import JSON</button>
+            <button id="export-json">Export JSON</button>
+            <button id="export-theme">Export Theme</button>
+            <button id="reset-json">Reset to Default</button>
+        </div>
+    </div>
+    <div id="resize-handle"></div>
+    <div id="theme-preview">
+        <div class="terminal">
+            <div class="terminal-header">
+                <div class="buttons">
+                    <span class="close"></span>
+                    <span class="minimize"></span>
+                    <span class="maximize"></span>
+                </div>
+                <div class="title">Terminal</div>
+                <div></div>
+            </div>
+            <div class="terminal-body" id="terminal-body">
+                <!-- Terminal content goes here -->
+                <div class="prompt">Welcome to Oh My Posh Profile Builder</div>
+                <div class="prompt">Import or create a config to get started</div>
+            </div>
+        </div>
+    </div>
+    <!-- Load the Oh My Posh renderer first -->
+    <script src="oh-my-posh-renderer.js"></script>
+    <script src="scripts.js"></script>
+</body>
+</html>

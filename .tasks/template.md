@@ -1,10 +1,9 @@
 ---
-task_name: "Task Title"
+status: todo # todo, in-progress, done
+completion_date: null # YYYY-MM-DD
 priority: 0
-status: "not started"  # options: "not started", "in progress", "completed"
-completion_date: ""    # leave empty if incomplete
-assignee: ""           # who is responsible for the task
-tags: []               # relevant tags
+taskId: ""
+subtasks: [] # Array of subtask IDs
 ---
 
 # Task Title
@@ -23,7 +22,7 @@ Detailed description of the task and what needs to be accomplished.
 - [ ] Criterion 2
 - [ ] Criterion 3
 
-## Implementation Details
+## Technical Details
 
 Technical details about how to implement the task.
 
@@ -31,6 +30,10 @@ Technical details about how to implement the task.
 
 - Dependency 1
 - Dependency 2
+
+## Subtasks
+
+List generated subtasks if the main task is broken down.
 
 ## Notes
 

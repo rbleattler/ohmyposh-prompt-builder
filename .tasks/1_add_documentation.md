@@ -1,10 +1,9 @@
 ---
-task_name: "Add Documentation"
+status: todo
+completion_date: null
 priority: 1
-status: "not started"
-completion_date: ""
-assignee: ""
-tags: ["documentation", "guides"]
+taskId: "20230615-143120"
+subtasks: []
 ---
 
 # Add Documentation
@@ -33,7 +32,7 @@ This task involves creating comprehensive documentation for both users and devel
   - [ ] Key components and their interactions
   - [ ] Testing approach
 
-## Implementation Details
+## Technical Details
 
 - Documentation should be written in Markdown
 - Include screenshots for the user guide
@@ -43,6 +42,10 @@ This task involves creating comprehensive documentation for both users and devel
 ## Dependencies
 
 - Completion of core functionality
+
+## Subtasks
+
+No subtasks have been created for this task yet.
 
 ## Notes
 

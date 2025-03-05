@@ -1,10 +1,9 @@
 ---
-task_name: "Enhance oh-my-posh Theme Rendering"
+status: todo
+completion_date: null
 priority: 0
-status: "not started"
-completion_date: ""
-assignee: ""
-tags: ["rendering", "theme", "feature"]
+taskId: "20230615-143045"
+subtasks: []
 ---
 
 # Enhance oh-my-posh Theme Rendering
@@ -31,7 +30,7 @@ The current theme rendering functionality needs to be enhanced to support additi
   - [ ] Implement template processing logic
   - [ ] Add documentation for template creation
 
-## Implementation Details
+## Technical Details
 
 - For segment types: Review the oh-my-posh documentation for all available segment types and implement rendering logic for each
 - For PowerLine characters: Use SVG or appropriate Unicode characters for various PowerLine styles
@@ -41,6 +40,10 @@ The current theme rendering functionality needs to be enhanced to support additi
 
 - Current theme rendering implementation
 - oh-my-posh documentation and reference implementation
+
+## Subtasks
+
+No subtasks have been created for this task yet.
 
 ## Notes
 

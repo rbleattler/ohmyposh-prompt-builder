@@ -1,11 +1,11 @@
 ---
 status: todo # todo, in-progress, done
 completion_date: null # YYYY-MM-DD
-taskId: "{{ taskId }}"
-parentTaskId: "{{ parentTaskId }}"
+taskId: ""
+parentTaskId: ""
 ---
 
-# Sub-task Name
+# Subtask Title
 
 ## Description
 

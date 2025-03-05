@@ -1,9 +1,9 @@
 ---
-status: todo
+status: in-progress
 completion_date: null
 priority: 0
 taskId: "20230615-143045"
-subtasks: []
+subtasks: ["20231115-104500", "20231115-104530", "20231115-104600"]
 ---
 
 # Enhance oh-my-posh Theme Rendering
@@ -18,9 +18,9 @@ The current theme rendering functionality needs to be enhanced to support additi
 
 ## Acceptance Criteria
 
-- [ ] Add support for more segment types
-  - [ ] Implement rendering for at least 5 additional segment types
-  - [ ] Ensure proper styling and icons for each new segment type
+- [x] Add support for more segment types
+  - [x] Implement rendering for at least 5 additional segment types
+  - [x] Ensure proper styling and icons for each new segment type
 - [ ] Improve PowerLine character rendering
   - [ ] Fix any visual inconsistencies with PowerLine characters
   - [ ] Support different PowerLine styles (rounded, angled, etc.)
@@ -43,7 +43,11 @@ The current theme rendering functionality needs to be enhanced to support additi
 
 ## Subtasks
 
-No subtasks have been created for this task yet.
+This task has been broken down into the following subtasks:
+
+1. [Add Support for Additional Segment Types](/d:/Repos/oh-my-posh-profile-builder/.tasks/0_enhance_theme_rendering_0_additional_segment_types.md) ✅
+2. [Improve PowerLine Character Rendering](/d:/Repos/oh-my-posh-profile-builder/.tasks/0_enhance_theme_rendering_1_powerline_rendering.md)
+3. [Add Custom Template Support](/d:/Repos/oh-my-posh-profile-builder/.tasks/0_enhance_theme_rendering_2_custom_templates.md)
 
 ## Notes
 

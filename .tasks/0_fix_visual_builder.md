@@ -1,5 +1,5 @@
 ---
-status: done
+status: not started
 completion_date: "2023-11-15"
 priority: 0
 taskId: "20230615-142230"
@@ -18,12 +18,12 @@ The visual builder component has several issues that prevent users from effectiv
 
 ## Acceptance Criteria
 
-- [x] Fix segment drag-and-drop functionality
-- [x] Resolve color picker not updating preview immediately
-- [x] Fix segment property updates not being reflected in the preview
-- [x] Ensure PowerLine characters render correctly between segments
-- [x] Make sure all form controls in the builder panel save state correctly
-- [x] Fix visual glitches when adding/removing segments
+- [ ] Fix segment drag-and-drop functionality
+- [ ] Resolve color picker not updating preview immediately
+- [ ] Fix segment property updates not being reflected in the preview
+- [ ] Ensure PowerLine characters render correctly between segments
+- [ ] Make sure all form controls in the builder panel save state correctly
+- [ ] Fix visual glitches when adding/removing segments
 
 ## Technical Details
 

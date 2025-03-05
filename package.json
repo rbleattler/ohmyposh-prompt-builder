@@ -16,7 +16,11 @@
     "@types/node": "^18.11.9",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^2.1.1",
+    "axios": "^1.8.1",
     "date-fns": "^2.29.3",
+    "json-schema-to-typescript": "^13.1.2",
     "monaco-editor": "^0.44.0",
     "re-resizable": "^6.11.2",
     "react": "^18.2.0",
@@ -27,13 +31,24 @@
     "react-dom": "^18.2.0",
     "react-resizable": "^3.0.5",
     "react-scripts": "^5.0.1",
-    "typescript": "^4.9.3"
+    "typescript": "^4.9.3",
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "npm run check-schema && react-scripts start",
+    "build": "npm run ensure-schema && npm run validate-default-theme && react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "init-schema-dirs": "ts-node scripts/initSchemaDirectories.ts",
+    "generate-schema-types": "npm run init-schema-dirs && ts-node scripts/generateSchemaTypes.ts",
+    "check-schema-updates": "ts-node scripts/checkSchemaUpdates.ts || echo 'Schema update may be needed'",
+    "check-schema": "npm run check-schema-updates && echo 'Schema is up to date'",
+    "update-schema": "npm run check-schema-updates || npm run generate-schema-types",
+    "ensure-schema": "ts-node scripts/ensureSchema.ts",
+    "validate-default-theme": "ts-node scripts/validateDefaultTheme.ts",
+    "prebuild": "npm run update-schema",
+    "prestart": "npm run check-schema",
+    "setup": "ts-node scripts/runSetup.ts"
   },
   "eslintConfig": {
     "extends": [
@@ -54,8 +69,10 @@
     ]
   },
   "devDependencies": {
+    "@types/json-schema": "^7.0.15",
     "@types/react-beautiful-dnd": "^13.1.8",
     "@types/react-color": "^3.0.6",
-    "@types/react-resizable": "^3.0.8"
+    "@types/react-resizable": "^3.0.8",
+    "ts-node": "^10.9.2"
   }
 }

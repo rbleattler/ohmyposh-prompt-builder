@@ -2,14 +2,25 @@ import React, { useCallback } from 'react';
 import { Box } from '@mui/material';
 import { useThemeContext } from '../../contexts/ThemeContext';
 import { SegmentType } from '../types/SegmentProps';
-import DraggableSegment from './DraggableSegment';
+import SegmentFactory from '../SegmentFactory';
+import { BlockConfig } from '../../types/BlockConfig';
 
 interface SegmentPreviewProps {
   segments: SegmentType[];
   currentBlockIndex?: number;
+  blockAlignment?: string;
+  blockNewline?: boolean;
 }
 
-const SegmentPreview: React.FC<SegmentPreviewProps> = ({ segments, currentBlockIndex = 0 }) => {
+/**
+ * Component for displaying a preview of segments within a block
+ */
+const SegmentPreview: React.FC<SegmentPreviewProps> = ({
+  segments,
+  currentBlockIndex = 0,
+  blockAlignment = 'left',
+  blockNewline = false
+}) => {
   const { theme, updateTheme } = useThemeContext();
 
   // Handle moving segments through drag and drop
@@ -43,6 +54,18 @@ const SegmentPreview: React.FC<SegmentPreviewProps> = ({ segments, currentBlockI
     return null;
   }
 
+  // Determine the container's justification based on alignment
+  const getJustification = () => {
+    switch (blockAlignment) {
+      case 'right':
+        return 'flex-end';
+      case 'center':
+        return 'center';
+      default:
+        return 'flex-start';
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -51,18 +74,29 @@ const SegmentPreview: React.FC<SegmentPreviewProps> = ({ segments, currentBlockI
         fontFamily: 'monospace',
         fontSize: '16px',
         minHeight: '32px',
-        overflowX: 'auto',
         width: '100%',
-        py: 1,
+        justifyContent: getJustification(),
+        flexDirection: 'row',
+        position: 'relative',
+        mb: blockNewline ? 1 : 0
       }}
     >
       {segments.map((segment, index) => (
-        <DraggableSegment
+        <Box
           key={index}
-          segment={segment}
-          index={index}
-          moveSegment={moveSegment}
-        />
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            position: 'relative'
+          }}
+        >
+          <SegmentFactory
+            type={segment.type}
+            config={segment.config}
+            foreground={segment.foreground}
+            background={segment.background}
+          />
+        </Box>
       ))}
     </Box>
   );

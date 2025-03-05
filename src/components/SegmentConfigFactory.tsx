@@ -1,5 +1,5 @@
 import React from 'react';
-import { SEGMENT_TYPES } from './SegmentSelector';
+import { getSegmentDefaultProperties, getSegmentDisplayName } from '../generated/segmentTypes';
 import GitSegmentConfig from './config-forms/GitSegmentConfig';
 import {
   TextField,
@@ -25,6 +25,78 @@ interface SegmentConfigFactoryProps {
   onForegroundChange: (color: string) => void;
   onBackgroundChange: (color: string) => void;
 }
+
+interface SegmentConfig {
+  type: string;
+  style?: 'plain' | 'powerline' | 'diamond';
+  foreground?: string;
+  background?: string;
+  properties?: Record<string, any>;
+  [key: string]: any;
+}
+
+/**
+ * Create a new segment configuration based on the segment type
+ */
+export const createSegmentConfig = (type: string): SegmentConfig => {
+  // Create a default configuration using the auto-generated default properties
+  const config: SegmentConfig = {
+    type,
+    style: 'powerline',
+    foreground: '#ffffff',
+    background: getDefaultBackgroundColor(type),
+    properties: getSegmentDefaultProperties(type)
+  };
+
+  return config;
+};
+
+/**
+ * Get a default background color based on segment type
+ */
+const getDefaultBackgroundColor = (type: string): string => {
+  // Each segment type gets its own default color for visual distinction
+  switch (type) {
+    case 'path':
+      return '#61AFEF'; // Blue
+    case 'git':
+      return '#C678DD'; // Purple
+    case 'time':
+      return '#98C379'; // Green
+    case 'battery':
+      return '#E5C07B'; // Yellow
+    case 'os':
+      return '#E06C75'; // Red
+    case 'text':
+      return '#56B6C2'; // Cyan
+    case 'command':
+      return '#ABB2BF'; // Grey
+    case 'node':
+      return '#689F63'; // Node.js green
+    case 'npm':
+      return '#CB3837'; // NPM red
+    case 'aws':
+      return '#FF9900'; // AWS orange
+    case 'azure':
+      return '#0078D4'; // Azure blue
+    default:
+      return '#444444'; // Default dark grey
+  }
+};
+
+/**
+ * Get all available segment types
+ */
+export const getSegmentTypes = (): string[] => {
+  return SEGMENT_TYPES.map(segment => segment.type);
+};
+
+/**
+ * Get segment display name
+ */
+export const getSegmentDisplayName = (type: string): string => {
+  return SEGMENT_TYPES.find(segment => segment.type === type)?.name || type;
+};
 
 /**
  * Factory component to render appropriate configuration form based on segment type
@@ -364,7 +436,7 @@ const SegmentConfigFactory: React.FC<SegmentConfigFactoryProps> = ({
             <Grid item xs={12}>
               {createTextField('Timezone', 'timezone', timeConfig.timezone || '')}
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12}></Grid>
               <FormGroup>
                 {createSwitch('Show Time', 'showTime', timeConfig.showTime !== false)}
                 {createSwitch('Show Date', 'showDate', timeConfig.showDate !== false)}
@@ -397,7 +469,7 @@ const SegmentConfigFactory: React.FC<SegmentConfigFactoryProps> = ({
             <Grid item xs={12}>
               {createTextField('Folder Separator', 'folderSeparator', pathConfig.folderSeparator)}
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={6}></Grid>
               {createTextField('Max Depth', 'maxDepth', pathConfig.maxDepth, 'number')}
             </Grid>
             <Grid item xs={6}>
@@ -410,7 +482,7 @@ const SegmentConfigFactory: React.FC<SegmentConfigFactoryProps> = ({
     case SEGMENT_TYPES.OS:
       const osConfig = initializeOsProperties();
       return (
-        <>
+        <></>
           <CommonConfigSection />
           <Grid container spacing={2}>
             <Grid item xs={6}>
@@ -435,7 +507,7 @@ const SegmentConfigFactory: React.FC<SegmentConfigFactoryProps> = ({
     case SEGMENT_TYPES.TEXT:
       const textConfig = initializeTextProperties();
       return (
-        <>
+        <></>
           <CommonConfigSection />
           <Grid container spacing={2}>
             <Grid item xs={12}>

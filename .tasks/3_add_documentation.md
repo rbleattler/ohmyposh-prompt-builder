@@ -1,7 +1,7 @@
 ---
 status: todo
 completion_date: null
-priority: 1
+priority: 3
 taskId: "20230615-143120"
 subtasks: []
 ---

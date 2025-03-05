@@ -1,34 +1,45 @@
 import React from 'react';
-import { Box, styled } from '@mui/material';
-import { useThemeContext } from '../contexts/ThemeContext';
+import { Box, Typography, styled, Theme } from '@mui/material'; // Add the proper imports
+import { useTheme } from '../contexts/ThemeContext';
 
-const TerminalWindow = styled(Box)(({ theme }) => ({
+// Define styled components with proper types
+const Terminal = styled(Box)(({ theme }: { theme: Theme }) => ({
+  backgroundColor: '#000',
+  color: '#fff',
+  fontFamily: '"Cascadia Code", "Source Code Pro", Menlo, Monaco, Consolas, monospace',
+  borderRadius: '4px',
+  padding: '12px',
+  width: '100%',
+  overflow: 'auto',
+  whiteSpace: 'nowrap',
   height: '100%',
-  backgroundColor: '#1e1e1e',
-  borderRadius: '6px',
-  overflow: 'hidden',
-  display: 'flex',
-  flexDirection: 'column',
-  boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
-  border: '1px solid #333'
+  boxSizing: 'border-box',
+  position: 'relative',
 }));
 
-const TerminalHeader = styled(Box)(({ theme }) => ({
+const TerminalHeader = styled(Box)(({ theme }: { theme: Theme }) => ({
   backgroundColor: '#323233',
   height: '32px',
   padding: '0 12px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  userSelect: 'none'
+  userSelect: 'none',
+  marginBottom: '10px',
+  borderTopLeftRadius: '4px',
+  borderTopRightRadius: '4px',
 }));
 
-const TerminalButtons = styled(Box)(({ theme }) => ({
+const TerminalButtons = styled(Box)({
   display: 'flex',
   gap: '8px',
-}));
+});
 
-const CircleButton = styled(Box)<{ color: string }>(({ color }) => ({
+interface CircleButtonProps {
+  color: string;
+}
+
+const CircleButton = styled(Box)<CircleButtonProps>(({ color }) => ({
   width: '12px',
   height: '12px',
   backgroundColor: color,
@@ -38,15 +49,15 @@ const CircleButton = styled(Box)<{ color: string }>(({ color }) => ({
   },
 }));
 
-const TerminalTitle = styled(Box)(({ theme }) => ({
+const TerminalTitle = styled(Box)({
   color: '#fff',
   opacity: 0.8,
   fontSize: '14px',
   textAlign: 'center',
-  flex: 1
-}));
+  flex: 1,
+});
 
-const TerminalBody = styled(Box)(({ theme }) => ({
+const TerminalBody = styled(Box)(({ theme }: { theme: Theme }) => ({
   backgroundColor: '#000',
   flex: 1,
   padding: '12px',
@@ -66,18 +77,18 @@ const TerminalBody = styled(Box)(({ theme }) => ({
   },
 }));
 
-const Prompt = styled(Box)(({ theme }) => ({
+const Prompt = styled(Box)({
   marginBottom: '6px',
   display: 'flex',
   flexDirection: 'column',
-}));
+});
 
-const PromptSegments = styled(Box)(({ theme }) => ({
+const PromptSegments = styled(Box)({
   display: 'flex',
   alignItems: 'center',
-}));
+});
 
-const CommandInput = styled(Box)(({ theme }) => ({
+const CommandInput = styled(Box)({
   marginTop: '6px',
   display: 'flex',
   alignItems: 'center',
@@ -98,68 +109,85 @@ const CommandInput = styled(Box)(({ theme }) => ({
       opacity: 0,
     },
   },
-}));
+});
 
 const TerminalPreview: React.FC = () => {
-  const { theme } = useThemeContext();
+  const { themeConfig } = useTheme();
 
   return (
-    <TerminalWindow>
-      <TerminalHeader>
-        <TerminalButtons>
-          <CircleButton color="#FF5F56" /> {/* Close */}
-          <CircleButton color="#FFBD2E" /> {/* Minimize */}
-          <CircleButton color="#27C93F" /> {/* Maximize */}
-        </TerminalButtons>
-        <TerminalTitle>Terminal</TerminalTitle>
-        <Box width="48px" /> {/* Empty space to balance the buttons */}
-      </TerminalHeader>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Typography variant="h6" gutterBottom>Terminal Preview</Typography>
+      <Terminal>
+        <TerminalHeader>
+          <TerminalButtons>
+            <CircleButton color="#ff5f57" />
+            <CircleButton color="#febc2e" />
+            <CircleButton color="#28c840" />
+          </TerminalButtons>
+          <TerminalTitle>terminal</TerminalTitle>
+          <Box sx={{ width: '50px' }} /> {/* Spacer to center the title */}
+        </TerminalHeader>
 
-      <TerminalBody>
-        <Prompt>
-          <Box sx={{ color: '#87D441' }}>
-            Last login: {new Date().toDateString()} {new Date().toLocaleTimeString()}
+        <TerminalBody>
+          {/* Simple rendering of blocks */}
+          {themeConfig?.blocks?.map((block: any, blockIndex: number) => (
+            <Prompt key={blockIndex}>
+              {/* Simple rendering of segments */}
+              <PromptSegments>
+                {block?.segments?.map((segment: any, segmentIndex: number) => (
+                  <Box
+                    key={segmentIndex}
+                    sx={{
+                      bgcolor: segment.background || '#000',
+                      color: segment.foreground || '#fff',
+                      px: 1,
+                      py: 0.5,
+                      display: 'inline-block',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    {segment.type === 'path' && '~/Projects/oh-my-posh-builder'}
+                    {segment.type === 'git' && '(main)'}
+                    {segment.type === 'text' && (segment.properties?.text || 'Text')}
+                    {segment.type === 'time' && new Date().toLocaleTimeString()}
+                    {segment.type === 'battery' && '100%'}
+                    {segment.type === 'os' && 'Windows'}
+                    {!['path', 'git', 'text', 'time', 'battery', 'os'].includes(segment.type) && segment.type}
+                  </Box>
+                ))}
+              </PromptSegments>
+
+              {/* Simulate command input */}
+              {blockIndex === (themeConfig?.blocks?.length || 0) - 1 && (
+                <CommandInput>
+                  $ npm start
+                </CommandInput>
+              )}
+            </Prompt>
+          ))}
+
+          {/* Sample output */}
+          <Box sx={{ color: '#8BC34A', mt: 1 }}>
+            &gt; oh-my-posh-profile-builder@0.1.0 start<br />
+            &gt; react-scripts start
           </Box>
-        </Prompt>
 
-        <Prompt>
-          <PromptSegments>
-            <Box component="span" sx={{ color: '#56C1D6' }}>user@hostname</Box>
-            <Box component="span" sx={{ mx: 0.5 }}>:</Box>
-            <Box component="span" sx={{ color: '#B166DB' }}>~/projects/oh-my-posh</Box>
-            <Box component="span" sx={{ ml: 0.5, color: '#56C1D6' }}>$</Box>
-          </PromptSegments>
-          <CommandInput>oh-my-posh preview</CommandInput>
-        </Prompt>
-
-        <Prompt sx={{ mt: 2 }}>
-          <Box sx={{ fontWeight: 'bold', color: '#F6DC8D', mb: 1 }}>Oh My Posh Preview</Box>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-            {/* This is where the actual prompt preview will render */}
-            <Box sx={{
-              backgroundColor: '#303030',
-              color: 'white',
-              px: 1.5, py: 0.5,
-              display: 'flex',
-              alignItems: 'center',
-              borderRadius: '4px 0 0 4px'
-            }}>
-              ~/Projects/oh-my-posh
-            </Box>
-            <Box sx={{
-              backgroundColor: '#4E5BA6',
-              color: 'white',
-              px: 1.5, py: 0.5,
-              display: 'flex',
-              alignItems: 'center'
-            }}>
-              <span style={{ marginRight: '6px' }}>main</span>
-              <span style={{ opacity: 0.7 }}>+2 ~1</span>
-            </Box>
+          <Box sx={{ color: '#CDDC39', mt: 1 }}>
+            Starting the development server...<br />
+            Compiled successfully!
           </Box>
-        </Prompt>
-      </TerminalBody>
-    </TerminalWindow>
+
+          <Box sx={{ color: '#fff', mt: 1 }}>
+            You can now view oh-my-posh-profile-builder in the browser.<br /><br />
+            Local:            http://localhost:3000<br />
+          </Box>
+
+          <Box sx={{ mt: 2 }}>
+            <Box component="span" sx={{ color: '#4CAF50' }}>$ _</Box>
+          </Box>
+        </TerminalBody>
+      </Terminal>
+    </Box>
   );
 };
 

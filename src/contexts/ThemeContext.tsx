@@ -1,109 +1,176 @@
-import React, { createContext, useState, useContext, useCallback, useMemo, useEffect } from 'react';
-import defaultTheme from '../default.omp.json';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
-interface ThemeContextType {
-  theme: any;
-  updateTheme: (newTheme: any) => void;
-  resetTheme: () => void;
-  importTheme: (themeJson: string) => void;
-  exportTheme: () => string;
+// Define a type for the theme configuration
+interface ThemeConfig {
+  $schema?: string;
+  version?: number;
+  final_space?: boolean;
+  blocks?: Block[];
+  console_title_template?: string;
+  [key: string]: any; // Allow for additional properties
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+// Define a type for blocks
+interface Block {
+  type: string;
+  alignment?: 'left' | 'right';
+  segments?: Segment[];
+  newline?: boolean;
+  [key: string]: any; // Allow for additional properties
+}
 
-// Helper function to convert default theme to ensure Unicode sequences are preserved
-const getDefaultTheme = (): any => {
-  // Create a deep copy with JSON serialization to standardize the format
-  const themeStr = JSON.stringify(defaultTheme);
-  return JSON.parse(themeStr);
+// Define a type for segments
+interface Segment {
+  type: string;
+  style?: 'plain' | 'diamond' | 'powerline';
+  foreground?: string;
+  background?: string;
+  properties?: Record<string, any>;
+  [key: string]: any; // Allow for additional properties
+}
+
+// Default theme template with minimal structure
+const defaultTheme: ThemeConfig = {
+  $schema: "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+  version: 2,
+  final_space: true,
+  blocks: [
+    {
+      type: "prompt",
+      alignment: "left",
+      segments: [
+        {
+          type: "path",
+          style: "powerline",
+          powerline_symbol: "\uE0B0",
+          foreground: "#ffffff",
+          background: "#61AFEF",
+          properties: {
+            style: "folder"
+          }
+        }
+      ]
+    }
+  ]
 };
 
-export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setTheme] = useState<any>(getDefaultTheme());
-  const [error, setError] = useState<string | null>(null);
+// Define the context type
+interface ThemeContextType {
+  themeConfig: ThemeConfig;
+  updateTheme: (newConfig: ThemeConfig) => void;
+  addBlock: () => void;
+  updateBlock: (blockIndex: number, updatedBlock: Block) => void;
+  removeBlock: (blockIndex: number) => void;
+  addSegment: (blockIndex: number, newSegment: Segment) => void;
+}
 
-  // Initialize from localStorage if available
-  useEffect(() => {
-    try {
-      const savedTheme = localStorage.getItem('oh-my-posh-theme');
-      if (savedTheme) {
-        setTheme(JSON.parse(savedTheme));
+// Create the context with undefined default
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+// Provider component
+export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  // State for theme configuration
+  const [themeConfig, setThemeConfig] = useState<ThemeConfig>(() => {
+    // Try to load from localStorage first
+    const savedTheme = localStorage.getItem('themeConfig');
+    if (savedTheme) {
+      try {
+        return JSON.parse(savedTheme);
+      } catch (e) {
+        console.error('Failed to parse saved theme:', e);
       }
-    } catch (err) {
-      console.error('Failed to load theme from localStorage:', err);
-      // Fallback to default theme if stored theme is invalid
-      setTheme(getDefaultTheme());
     }
-  }, []);
+    // Fall back to default theme
+    return defaultTheme;
+  });
 
-  // Save to localStorage when theme changes
+  // Save theme to localStorage whenever it changes
   useEffect(() => {
-    try {
-      localStorage.setItem('oh-my-posh-theme', JSON.stringify(theme));
-    } catch (err) {
-      console.error('Failed to save theme to localStorage:', err);
+    if (themeConfig) {
+      localStorage.setItem('themeConfig', JSON.stringify(themeConfig));
     }
-  }, [theme]);
+  }, [themeConfig]);
 
-  const updateTheme = useCallback((newTheme: any) => {
-    try {
-      setTheme(newTheme);
-    } catch (err) {
-      setError(`Failed to update theme: ${err instanceof Error ? err.message : 'Unknown error'}`);
-    }
-  }, []);
+  // Update entire theme configuration
+  const updateTheme = (newConfig: ThemeConfig) => {
+    setThemeConfig(newConfig);
+  };
 
-  const resetTheme = useCallback(() => {
-    try {
-      setTheme(getDefaultTheme());
-    } catch (err) {
-      setError(`Failed to reset theme: ${err instanceof Error ? err.message : 'Unknown error'}`);
-    }
-  }, []);
+  // Add a new block to the theme
+  const addBlock = () => {
+    setThemeConfig((prevConfig: ThemeConfig) => {
+      const updatedBlocks = [...(prevConfig.blocks || []), {
+        type: "prompt",
+        alignment: "left",
+        segments: []
+      }];
 
-  const importTheme = useCallback((themeJson: string) => {
-    try {
-      const parsedTheme = JSON.parse(themeJson);
-      if (parsedTheme) {
-        setTheme(parsedTheme);
-      } else {
-        throw new Error('Invalid JSON format');
+      return { ...prevConfig, blocks: updatedBlocks };
+    });
+  };
+
+  // Update a specific block
+  const updateBlock = (blockIndex: number, updatedBlock: Block) => {
+    setThemeConfig((prevConfig: ThemeConfig) => {
+      const updatedBlocks = [...(prevConfig.blocks || [])];
+      updatedBlocks[blockIndex] = updatedBlock;
+
+      return { ...prevConfig, blocks: updatedBlocks };
+    });
+  };
+
+  // Remove a block
+  const removeBlock = (blockIndex: number) => {
+    setThemeConfig((prevConfig: ThemeConfig) => {
+      const updatedBlocks = [...(prevConfig.blocks || [])];
+      updatedBlocks.splice(blockIndex, 1);
+
+      return { ...prevConfig, blocks: updatedBlocks };
+    });
+  };
+
+  // Add a new segment to a block
+  const addSegment = (blockIndex: number, newSegment: Segment) => {
+    setThemeConfig((prevConfig: ThemeConfig) => {
+      const updatedBlocks = [...(prevConfig.blocks || [])];
+
+      if (!updatedBlocks[blockIndex]) {
+        console.error(`Block at index ${blockIndex} not found`);
+        return prevConfig;
       }
-    } catch (err) {
-      setError(`Failed to import theme: ${err instanceof Error ? err.message : 'Unknown error'}`);
-      throw err; // Re-throw to allow caller to handle the error
-    }
-  }, []);
 
-  const exportTheme = useCallback(() => {
-    try {
-      return JSON.stringify(theme, null, 2);
-    } catch (err) {
-      setError(`Failed to export theme: ${err instanceof Error ? err.message : 'Unknown error'}`);
-      return JSON.stringify(getDefaultTheme(), null, 2); // Fallback
-    }
-  }, [theme]);
+      const updatedSegments = [...(updatedBlocks[blockIndex].segments || []), newSegment];
+      updatedBlocks[blockIndex] = {
+        ...updatedBlocks[blockIndex],
+        segments: updatedSegments
+      };
 
-  const value = useMemo(() => ({
-    theme,
+      return { ...prevConfig, blocks: updatedBlocks };
+    });
+  };
+
+  // Context value
+  const contextValue: ThemeContextType = {
+    themeConfig,
     updateTheme,
-    resetTheme,
-    importTheme,
-    exportTheme,
-  }), [theme, updateTheme, resetTheme, importTheme, exportTheme]);
+    addBlock,
+    updateBlock,
+    removeBlock,
+    addSegment
+  };
 
   return (
-    <ThemeContext.Provider value={value}>
-      {error && <div className="error-notification">{error}</div>}
+    <ThemeContext.Provider value={contextValue}>
       {children}
     </ThemeContext.Provider>
   );
 };
 
-export const useThemeContext = (): ThemeContextType => {
+// Custom hook to use the theme context
+export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (context === undefined) {
-    throw new Error('useThemeContext must be used within a ThemeProvider');
+    throw new Error('useTheme must be used within a ThemeProvider');
   }
   return context;
 };

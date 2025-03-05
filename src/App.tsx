@@ -1,7 +1,9 @@
 import React from 'react';
 import { Box, CssBaseline, ThemeProvider as MuiThemeProvider, createTheme, Paper } from '@mui/material';
+// Make sure we're using the correct ThemeProvider
 import { ThemeProvider } from './contexts/ThemeContext';
 import { SchemaProvider } from './contexts/SchemaContext';
+import { ValidationProvider } from './contexts/ValidationContext';
 import VisualBuilder from './components/VisualBuilder';
 import JsonEditor from './components/JsonEditor';
 import TerminalPreview from './components/TerminalPreview';
@@ -40,53 +42,55 @@ const App: React.FC = () => {
       <DndProvider backend={HTML5Backend}>
         <ThemeProvider>
           <SchemaProvider>
-            {/* Add schema update notification */}
-            <SchemaUpdateNotification onUpdateClick={handleSchemaUpdateClick} />
+            <ValidationProvider>
+              {/* Add schema update notification */}
+              <SchemaUpdateNotification onUpdateClick={handleSchemaUpdateClick} />
 
-            <Box sx={{
-              height: '100vh',
-              display: 'flex',
-              flexDirection: 'column',
-              overflow: 'hidden',
-              bgcolor: 'background.default',
-              color: 'text.primary',
-            }}>
-              <ResizableLayout
-                direction="horizontal"
-                initialSizes={[500, 300]}
-                minSizes={[200, 200]}
-              >
-                {/* Top section with editor and preview */}
-                <Box sx={{ width: '100%', height: '100%', display: 'flex' }}>
-                  <ResizableLayout
-                    direction="vertical"
-                    initialSizes={[600, 400]}
-                    minSizes={[300, 300]}
-                  >
-                    {/* JSON Editor */}
-                    <Box sx={{ width: '100%', height: '100%', p: 1 }}>
-                      <Paper sx={{ height: '100%', p: 2, overflow: 'hidden' }}>
-                        <JsonEditor />
-                      </Paper>
-                    </Box>
+              <Box sx={{
+                height: '100vh',
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden',
+                bgcolor: 'background.default',
+                color: 'text.primary',
+              }}>
+                <ResizableLayout
+                  direction="horizontal"
+                  initialSizes={[500, 300]}
+                  minSizes={[200, 200]}
+                >
+                  {/* Top section with editor and preview */}
+                  <Box sx={{ width: '100%', height: '100%', display: 'flex' }}>
+                    <ResizableLayout
+                      direction="vertical"
+                      initialSizes={[600, 400]}
+                      minSizes={[300, 300]}
+                    >
+                      {/* JSON Editor */}
+                      <Box sx={{ width: '100%', height: '100%', p: 1 }}>
+                        <Paper sx={{ height: '100%', p: 2, overflow: 'hidden' }}>
+                          <JsonEditor />
+                        </Paper>
+                      </Box>
 
-                    {/* Terminal Preview */}
-                    <Box sx={{ width: '100%', height: '100%', p: 1 }}>
-                      <Paper sx={{ height: '100%', p: 2, overflow: 'hidden' }}>
-                        <TerminalPreview />
-                      </Paper>
-                    </Box>
-                  </ResizableLayout>
-                </Box>
+                      {/* Terminal Preview */}
+                      <Box sx={{ width: '100%', height: '100%', p: 1 }}>
+                        <Paper sx={{ height: '100%', p: 2, overflow: 'hidden' }}>
+                          <TerminalPreview />
+                        </Paper>
+                      </Box>
+                    </ResizableLayout>
+                  </Box>
 
-                {/* Visual Builder */}
-                <Box sx={{ width: '100%', height: '100%', p: 1, overflowY: 'auto' }}>
-                  <Paper sx={{ p: 2, minHeight: '100%' }}>
-                    <VisualBuilder />
-                  </Paper>
-                </Box>
-              </ResizableLayout>
-            </Box>
+                  {/* Visual Builder */}
+                  <Box sx={{ width: '100%', height: '100%', p: 1, overflowY: 'auto' }}>
+                    <Paper sx={{ p: 2, minHeight: '100%' }}>
+                      <VisualBuilder />
+                    </Paper>
+                  </Box>
+                </ResizableLayout>
+              </Box>
+            </ValidationProvider>
           </SchemaProvider>
         </ThemeProvider>
       </DndProvider>

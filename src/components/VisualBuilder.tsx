@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Button,
@@ -11,22 +11,65 @@ import {
   Tabs,
   Tab,
   ToggleButtonGroup,
-  ToggleButton
+  ToggleButton,
+  Collapse
 } from '@mui/material';
 import ViewQuiltIcon from '@mui/icons-material/ViewQuilt';
 import TerminalIcon from '@mui/icons-material/Terminal';
 import AddIcon from '@mui/icons-material/Add';
-import { useThemeContext } from '../contexts/ThemeContext';
-import { SegmentType } from './types/SegmentProps';
-import { BlockConfig } from '../types/BlockConfig';
-import DraggableSegmentItem from './DraggableSegmentItem';
-import SegmentSelector from './SegmentSelector';
-import SegmentEditor from './SegmentEditor';
-import BlockList from './blocks/BlockList';
-import BlockEditor from './blocks/BlockEditor';
-import BlockSelector from './blocks/BlockSelector';
+import ErrorIcon from '@mui/icons-material/Error';
+// Fix: use the correct import for useTheme instead of useThemeContext
+import { useTheme } from '../contexts/ThemeContext';
+import { useValidation } from '../contexts/ValidationContext';
+import ValidationErrorDisplay from './ValidationErrorDisplay';
+
+// Import missing components or define them
 import BlockPreview from './preview/BlockPreview';
 import CommandPreview from './preview/CommandPreview';
+import SegmentSelector from './SegmentSelector';
+import BlockSelector from './BlockSelector';
+import { createSegmentConfig } from './SegmentConfigFactory';
+
+// Define types for segments and blocks
+interface SegmentType {
+  type: string;
+  style?: 'plain' | 'diamond' | 'powerline';
+  foreground?: string;
+  background?: string;
+  properties?: Record<string, any>;
+  [key: string]: any;
+}
+
+interface BlockConfig {
+  type: string;
+  alignment?: 'left' | 'right';
+  segments?: SegmentType[];
+  newline?: boolean;
+  [key: string]: any;
+}
+
+// Simple ThemeSettings component
+const ThemeSettings: React.FC = () => {
+  return (
+    <Box>
+      <Typography variant="body2" color="text.secondary" gutterBottom>
+        Configure global theme settings here
+      </Typography>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={6}>
+          <Button variant="outlined" fullWidth>
+            Export Theme
+          </Button>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Button variant="outlined" fullWidth>
+            Import Theme
+          </Button>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+};
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -34,6 +77,7 @@ interface TabPanelProps {
   value: number;
 }
 
+// Tab panel component
 const TabPanel: React.FC<TabPanelProps> = ({ children, value, index, ...other }) => {
   return (
     <div
@@ -49,8 +93,102 @@ const TabPanel: React.FC<TabPanelProps> = ({ children, value, index, ...other })
   );
 };
 
+// Simple segment editor component with required props
+const SegmentEditor: React.FC<{
+  segment: SegmentType;
+  segmentIndex: number;
+  blockIndex: number;
+  onChange: (updatedSegment: SegmentType) => void;
+}> = ({ segment, segmentIndex, blockIndex, onChange }) => {
+  return (
+    <Box>
+      <Typography variant="h6">Edit {segment.type} Segment</Typography>
+      {/* Implement segment editor UI here */}
+    </Box>
+  );
+};
+
+// Simple block list component
+const BlockList: React.FC<{
+  blocks: BlockConfig[];
+  selectedBlockIndex: number;
+  onSelectBlock: (index: number) => void;
+  onAddBlock: () => void;
+  onDeleteBlock: (index: number) => void;
+  onMoveBlock: (dragIndex: number, hoverIndex: number) => void;
+}> = ({ blocks, selectedBlockIndex, onSelectBlock, onAddBlock, onDeleteBlock, onMoveBlock }) => {
+  return (
+    <Box>
+      {blocks.map((block, index) => (
+        <Box
+          key={index}
+          sx={{
+            p: 1,
+            mb: 1,
+            bgcolor: selectedBlockIndex === index ? 'primary.dark' : 'background.paper',
+            borderRadius: 1,
+            cursor: 'pointer'
+          }}
+          onClick={() => onSelectBlock(index)}
+        >
+          <Typography>Block {index + 1}: {block.type}</Typography>
+        </Box>
+      ))}
+      <Button
+        variant="outlined"
+        fullWidth
+        startIcon={<AddIcon />}
+        onClick={onAddBlock}
+        sx={{ mt: 1 }}
+      ></Button>
+      Add Block
+    </Button>
+    </Box >
+  );
+};
+
+// Simple block editor component
+const BlockEditor: React.FC<{
+  block: BlockConfig;
+  onChange: (updatedBlock: BlockConfig) => void;
+}> = ({ block, onChange }) => {
+  return (
+    <Box>
+      <Typography variant="h6">Edit {block.type} Block</Typography>
+      {/* Implement block editor UI here */}
+    </Box>
+  );
+};
+
+// DraggableSegmentItem component
+const DraggableSegmentItem: React.FC<{
+  segment: SegmentType;
+  index: number;
+  selectedIndex: number | null;
+  onSelect: (index: number) => void;
+  onDelete: (index: number) => void;
+  moveSegment: (dragIndex: number, hoverIndex: number) => void;
+}> = ({ segment, index, selectedIndex, onSelect, onDelete }) => {
+  return (
+    <Box
+      sx={{
+        p: 1,
+        mb: 1,
+        bgcolor: selectedIndex === index ? 'primary.dark' : 'background.paper',
+        borderRadius: 1,
+        cursor: 'pointer'
+      }}
+      onClick={() => onSelect(index)}
+    >
+      <Typography>{segment.type} Segment</Typography>
+    </Box>
+  );
+};
+
 const VisualBuilder: React.FC = () => {
-  const { theme, updateTheme } = useThemeContext();
+  // Fix: use useTheme instead of useThemeContext
+  const { themeConfig, updateTheme } = useTheme();
+  const { errors } = useValidation();
   const [selectedSegmentIndex, setSelectedSegmentIndex] = useState<number | null>(null);
   const [selectedBlockIndex, setSelectedBlockIndex] = useState(0);
   const [showSegmentSelector, setShowSegmentSelector] = useState(false);
@@ -58,11 +196,21 @@ const VisualBuilder: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [tabValue, setTabValue] = useState(0);
   const [previewMode, setPreviewMode] = useState<'blocks' | 'terminal'>('blocks');
+  const [showGlobalErrors, setShowGlobalErrors] = useState(false);
+
+  // Count errors not associated with specific blocks
+  const globalErrors = errors.filter(error =>
+    !error.path.startsWith('/blocks/') &&
+    error.path !== 'blocks' &&
+    error.path !== '/blocks'
+  );
+
+  const hasGlobalErrors = globalErrors.length > 0;
 
   // Managing blocks state
   const [blocks, setBlocks] = useState<BlockConfig[]>(() => {
-    if (theme?.blocks) {
-      return theme.blocks;
+    if (themeConfig?.blocks) {
+      return themeConfig.blocks;
     }
     // Default to a single left-aligned block if none exists
     return [{ type: 'prompt', alignment: 'left', segments: [] }];
@@ -77,18 +225,18 @@ const VisualBuilder: React.FC = () => {
   });
 
   // Sync blocks with theme
-  useEffect(() => {
-    if (theme?.blocks) {
-      setBlocks(theme.blocks);
+  React.useEffect(() => {
+    if (themeConfig?.blocks) {
+      setBlocks(themeConfig.blocks);
       // If selected block index is out of bounds, reset it
-      if (selectedBlockIndex >= theme.blocks.length) {
-        setSelectedBlockIndex(Math.max(0, theme.blocks.length - 1));
+      if (selectedBlockIndex >= themeConfig.blocks.length) {
+        setSelectedBlockIndex(Math.max(0, themeConfig.blocks.length - 1));
       }
     }
-  }, [theme, selectedBlockIndex]);
+  }, [themeConfig, selectedBlockIndex]);
 
   // Sync segments with selected block
-  useEffect(() => {
+  React.useEffect(() => {
     if (blocks[selectedBlockIndex]?.segments) {
       setSegments(blocks[selectedBlockIndex].segments || []);
     } else {
@@ -130,7 +278,7 @@ const VisualBuilder: React.FC = () => {
 
       // Update the theme context
       updateTheme({
-        ...theme,
+        ...themeConfig,
         blocks: updatedBlocks
       });
 
@@ -156,7 +304,7 @@ const VisualBuilder: React.FC = () => {
 
       // Update theme context
       updateTheme({
-        ...theme,
+        ...themeConfig,
         blocks: updatedBlocks
       });
 
@@ -182,7 +330,7 @@ const VisualBuilder: React.FC = () => {
 
       // Update theme context
       updateTheme({
-        ...theme,
+        ...themeConfig,
         blocks: updatedBlocks
       });
     } catch (err) {
@@ -191,14 +339,10 @@ const VisualBuilder: React.FC = () => {
   };
 
   // Segment management functions
-  const handleSegmentSelect = useCallback((type: string) => {
+  const handleSegmentSelect = (type: string) => {
     try {
-      const newSegment: SegmentType = {
-        type,
-        config: {},
-        foreground: "#ffffff",
-        background: "#000000"
-      };
+      // Use the segment config factory to create a properly configured segment
+      const newSegment = createSegmentConfig(type);
 
       const updatedSegments = [...segments, newSegment];
       setSegments(updatedSegments);
@@ -212,7 +356,7 @@ const VisualBuilder: React.FC = () => {
 
       // Update the theme
       updateTheme({
-        ...theme,
+        ...themeConfig,
         blocks: updatedBlocks
       });
 
@@ -221,9 +365,9 @@ const VisualBuilder: React.FC = () => {
     } catch (err) {
       setError(`Failed to add segment: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
-  }, [segments, blocks, selectedBlockIndex, theme, updateTheme]);
+  };
 
-  const handleDeleteSegment = useCallback((index: number) => {
+  const handleDeleteSegment = (index: number) => {
     try {
       const updatedSegments = segments.filter((_, i) => i !== index);
       setSegments(updatedSegments);
@@ -237,7 +381,7 @@ const VisualBuilder: React.FC = () => {
 
       // Update the theme
       updateTheme({
-        ...theme,
+        ...themeConfig,
         blocks: updatedBlocks
       });
 
@@ -245,9 +389,9 @@ const VisualBuilder: React.FC = () => {
     } catch (err) {
       setError(`Failed to delete segment: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
-  }, [segments, blocks, selectedBlockIndex, theme, updateTheme]);
+  };
 
-  const handleMoveSegment = useCallback((dragIndex: number, hoverIndex: number) => {
+  const handleMoveSegment = (dragIndex: number, hoverIndex: number) => {
     try {
       const updatedSegments = [...segments];
       const draggedSegment = updatedSegments[dragIndex];
@@ -273,15 +417,15 @@ const VisualBuilder: React.FC = () => {
 
       // Update the theme
       updateTheme({
-        ...theme,
+        ...themeConfig,
         blocks: updatedBlocks
       });
     } catch (err) {
       setError(`Failed to move segment: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
-  }, [segments, blocks, selectedBlockIndex, selectedSegmentIndex, theme, updateTheme]);
+  };
 
-  const handleUpdateSegment = useCallback((index: number, updatedSegment: SegmentType) => {
+  const handleUpdateSegment = (index: number, updatedSegment: SegmentType) => {
     try {
       const updatedSegments = [...segments];
       updatedSegments[index] = updatedSegment;
@@ -297,16 +441,16 @@ const VisualBuilder: React.FC = () => {
 
       // Update the theme
       updateTheme({
-        ...theme,
+        ...themeConfig,
         blocks: updatedBlocks
       });
     } catch (err) {
       setError(`Failed to update segment: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
-  }, [segments, blocks, selectedBlockIndex, theme, updateTheme]);
+  };
 
   // Add new function to handle block reordering
-  const handleMoveBlock = useCallback((dragIndex: number, hoverIndex: number) => {
+  const handleMoveBlock = (dragIndex: number, hoverIndex: number) => {
     try {
       // Create a copy of the blocks array
       const updatedBlocks = [...blocks];
@@ -341,13 +485,13 @@ const VisualBuilder: React.FC = () => {
 
       // Update the theme context
       updateTheme({
-        ...theme,
+        ...themeConfig,
         blocks: updatedBlocks
       });
     } catch (err) {
       setError(`Failed to reorder blocks: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
-  }, [blocks, selectedBlockIndex, theme, updateTheme]);
+  };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -399,18 +543,14 @@ const VisualBuilder: React.FC = () => {
           >
             {previewMode === 'blocks' ? (
               <BlockPreview
-                blocks={blocks}
-                selectedBlockIndex={selectedBlockIndex}
-                onSelectBlock={(index) => {
-                  setSelectedBlockIndex(index);
-                  setTabValue(0); // Switch to Blocks tab when selecting a block
-                }}
+                block={blocks[selectedBlockIndex] || { type: 'prompt', alignment: 'left', segments: [] }}
+                isActive={true}
+                onClick={() => setSelectedBlockIndex(selectedBlockIndex)}
               />
             ) : (
               <CommandPreview
-                blocks={blocks}
                 selectedBlockIndex={selectedBlockIndex}
-                onSelectBlock={(index) => {
+                onSelectBlock={(index: number) => {
                   setSelectedBlockIndex(index);
                   setTabValue(0); // Switch to Blocks tab when selecting a block
                 }}
@@ -495,103 +635,137 @@ const VisualBuilder: React.FC = () => {
                   onChange={handleUpdateBlock}
                 />
               ) : (
-                <Typography variant="body1" color="textSecondary" sx={{ textAlign: 'center', py: 4 }}>
+                <Typography variant="body1" color="textSecondary" sx={{ textAlign: 'center', py: 4 }}></Typography>
                   No block selected. Add or select a block to edit its properties.
-                </Typography>
-              )
-            ) : (
-              selectedSegmentIndex !== null && selectedSegmentIndex < segments.length ? (
-                <SegmentEditor
-                  segment={segments[selectedSegmentIndex]}
-                  onChange={(updatedSegment) => handleUpdateSegment(selectedSegmentIndex, updatedSegment)}
-                />
-              ) : (
-                <Typography variant="body1" color="textSecondary" sx={{ textAlign: 'center', py: 4 }}>
-                  Select a segment to edit its properties or add a new segment.
-                </Typography>
-              )
-            )}
-          </Paper>
-        </Grid>
-      </Grid>
+          </Typography>
+          )
+          ) : (
+          selectedSegmentIndex !== null && selectedSegmentIndex < segments.length ? (
+          <SegmentEditor
+            segment={segments[selectedSegmentIndex]}
+            segmentIndex={selectedSegmentIndex}
+            blockIndex={selectedBlockIndex}
+            onChange={(updatedSegment) => handleUpdateSegment(selectedSegmentIndex, updatedSegment)}
+          />
+          ) : (
+          <Typography variant="body1" color="textSecondary" sx={{ textAlign: 'center', py: 4 }}></Typography>
+          Select a segment to edit its properties or add a new segment.
+        </Typography>
+        )
+            );}
+      </Paper>
+    </Grid>
+      </Grid >
 
-      {/* Segment Type Selector Dialog */}
-      {showSegmentSelector && (
-        <Box
-          sx={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            bgcolor: 'rgba(0,0,0,0.5)',
-            zIndex: 1000,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-          onClick={() => setShowSegmentSelector(false)}
-        >
-          <Box
-            sx={{
-              maxWidth: '500px',
-              width: '100%',
-              maxHeight: '80vh',
-              overflowY: 'auto',
-              m: 2,
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <SegmentSelector onSelect={handleSegmentSelect} />
-          </Box>
-        </Box>
-      )}
+  {/* Global validation errors */ }
+{
+  hasGlobalErrors && (
+        <Box sx={{ mb: 2 }}></Box>
+          <Alert
+            severity="error"
+            icon={<ErrorIcon fontSize="inherit" />}
+            action={
+              <Button
+                color="inherit"
+                size="small"
+                onClick={() => setShowGlobalErrors(!showGlobalErrors)}
+              >
+                {showGlobalErrors ? 'Hide' : 'Show'} Details
+              </Button>
+            }
+          ></Alert>
+            Your theme has { globalErrors.length } validation { globalErrors.length === 1 ? 'issue' : 'issues' }
+          </Alert >
+    <Collapse in={showGlobalErrors}>
+      <ValidationErrorDisplay maxHeight={150} />
+    </Collapse>
+        </Box >
+      )
+}
 
-      {/* Block Type Selector Dialog */}
-      {showBlockSelector && (
-        <Box
-          sx={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            bgcolor: 'rgba(0,0,0,0.5)',
-            zIndex: 1000,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-          onClick={() => setShowBlockSelector(false)}
-        >
-          <Box
-            sx={{
-              maxWidth: '500px',
-              width: '100%',
-              maxHeight: '80vh',
-              overflowY: 'auto',
-              m: 2,
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <BlockSelector onSelect={handleSelectBlock} />
-          </Box>
-        </Box>
-      )}
+{/* Segment Type Selector Dialog */ }
+{
+  showSegmentSelector && (
+    <Box
+      sx={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        bgcolor: 'rgba(0,0,0,0.5)',
+        zIndex: 1000,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+      onClick={() => setShowSegmentSelector(false)}
+    >
+      <Box
+        sx={{
+          maxWidth: '500px',
+          width: '100%',
+          maxHeight: '80vh',
+          overflowY: 'auto',
+          m: 2,
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <SegmentSelector onSelect={handleSegmentSelect} />
+      </Box>
+    </Box>
+  )
+}
 
-      {/* Error Handling */}
+{/* Block Type Selector Dialog */ }
+{
+  showBlockSelector && (
+    <Box
+      sx={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        bgcolor: 'rgba(0,0,0,0.5)',
+        zIndex: 1000,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+      onClick={() => setShowBlockSelector(false)}
+    >
+      <Box
+        sx={{
+          maxWidth: '500px',
+          width: '100%',
+          maxHeight: '80vh',
+          overflowY: 'auto',
+          m: 2,
+        }}
+        onClick={(e) => e.stopPropagation()}
+      ></Box>
+      <BlockSelector onSelect={handleSelectBlock} />
+    </Box>
+        </Box >
+      )
+}
+
+{/* Error Handling */ }
       <Snackbar
         open={!!error}
         autoHideDuration={6000}
         onClose={() => setError(null)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
+
+      </Snackbar>
         <Alert onClose={() => setError(null)} severity="error" sx={{ width: '100%' }}>
           {error}
         </Alert>
-
-      </Snackbar>
-    </Box>
-)};
+      </Snackbar >
+    </Box >
+  );
+};
 
 export default VisualBuilder;

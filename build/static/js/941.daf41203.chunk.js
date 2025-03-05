@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkoh_my_posh_profile_builder=self.webpackChunkoh_my_posh_profile_builder||[]).push([[941],{3941:e=>{e.exports=JSON.parse('{"lastChecked":"2025-03-05T04:01:58.285Z","lastUpdated":"2025-03-05T04:01:08.260Z","version":"schema.json","hash":"c9156bbd43709584e662bab0573bc9fd96c76033493f2735ef33489825ccc960"}')}}]);

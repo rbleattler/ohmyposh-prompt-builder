@@ -71,10 +71,13 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@types/jest": "^29.5.14",
     "@types/json-schema": "^7.0.15",
     "@types/react-beautiful-dnd": "^13.1.8",
     "@types/react-color": "^3.0.6",
     "@types/react-resizable": "^3.0.8",
+    "@types/testing-library__react": "^10.0.1",
     "ts-node": "^10.9.2"
   }
 }

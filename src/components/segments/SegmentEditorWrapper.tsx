@@ -18,13 +18,14 @@ const SegmentEditorWrapper: React.FC<SegmentEditorWrapperProps> = ({
   blockIndex,
   onChange
 }) => {
+  // SchemaBasedSegmentFactory expects different props, so we adapt them here
   return (
     <SchemaBasedSegmentFactory
       type={segment.type}
-      segmentConfig={segment}
-      onChange={onChange}
-      segmentIndex={segmentIndex}
-      blockIndex={blockIndex}
+      config={segment}  // Changed from segmentConfig to config to match the expected prop name
+      foreground={segment.foreground || '#ffffff'}
+      background={segment.background || '#000000'}
+      style={segment.style || 'powerline'}
     />
   );
 };

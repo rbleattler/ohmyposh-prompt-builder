@@ -120,64 +120,15 @@ async function generateMainInterface(schema: any): Promise<void> {
 async function generateComponentInterfaces(schema: any): Promise<void> {
   console.log('Generating component interfaces...');
 
-  if (!schema.definitions) {
-    console.warn('No definitions found in schema');
-    return;
-  }
+  // Generate block interface
+  if (schema.definitions && schema.definitions.Block) {
+    const blockSchema = {
+      ...schema.definitions.Block,
+      $schema: schema.$schema,
+      definitions: schema.definitions,
+    };
 
-  // Get all definitions from the schema
-  const definitionKeys = Object.keys(schema.definitions);
-  console.log(`Found ${definitionKeys.length} definitions in schema`);
-
-  // Process all definitions to generate interfaces
-  for (const key of definitionKeys) {
-    try {
-      console.log(`Generating interface for ${key}...`);
-      const definitionSchema = {
-        ...schema.definitions[key],
-        $schema: schema.$schema,
-        definitions: schema.definitions,
-      };
-
-      // Generate TypeScript interface
-      const typeName = key;
-      const typeTs = await compile(definitionSchema, typeName, {
-        bannerComment: `
-/**
- * This file was automatically generated from the Oh My Posh schema.
- * DO NOT MODIFY IT BY HAND.
- *
- * Generated on: ${new Date().toISOString()}
- */`,
-        style: {
-          singleQuote: true,
-          semi: true,
-        },
-        unreachableDefinitions: false,
-      });
-
-      // Determine the output file name (with case normalization)
-      let outputFileName = key.charAt(0).toLowerCase() + key.slice(1);
-
-      // Handle special cases for naming consistency
-      if (outputFileName.endsWith('Segment')) {
-        // For segment types, use a more specific naming pattern
-        const segmentType = outputFileName.replace('Segment', '');
-        outputFileName = `${segmentType.toLowerCase()}Segment`;
-      }
-
-      const typePath = path.join(TYPES_DIR, `${outputFileName}.ts`);
-      fs.writeFileSync(typePath, typeTs);
-      console.log(`${typeName} interface saved to ${typePath}`);
-    } catch (error) {
-      console.error(`Failed to generate interface for ${key}:`, error);
-    }
-  }
-
-  // Additionally, generate a special interface for the general schema
-  try {
-    console.log('Generating schema interface...');
-    const schemaTs = await compile(schema, 'OhMyPoshSchema', {
+    const blockTs = await compile(blockSchema, 'Block', {
       bannerComment: `
 /**
  * This file was automatically generated from the Oh My Posh schema.
@@ -192,11 +143,69 @@ async function generateComponentInterfaces(schema: any): Promise<void> {
       unreachableDefinitions: false,
     });
 
-    const schemaTypePath = path.join(TYPES_DIR, 'schema.ts');
-    fs.writeFileSync(schemaTypePath, schemaTs);
-    console.log(`Schema interface saved to ${schemaTypePath}`);
-  } catch (error) {
-    console.error('Failed to generate schema interface:', error);
+    const blockPath = path.join(TYPES_DIR, 'block.ts');
+    fs.writeFileSync(blockPath, blockTs);
+    console.log(`Block interface saved to ${blockPath}`);
+  }
+
+  // Generate segment interfaces
+  if (schema.definitions && schema.definitions.Segment) {
+    const segmentSchema = {
+      ...schema.definitions.Segment,
+      $schema: schema.$schema,
+      definitions: schema.definitions,
+    };
+
+    const segmentTs = await compile(segmentSchema, 'Segment', {
+      bannerComment: `
+/**
+ * This file was automatically generated from the Oh My Posh schema.
+ * DO NOT MODIFY IT BY HAND.
+ *
+ * Generated on: ${new Date().toISOString()}
+ */`,
+      style: {
+        singleQuote: true,
+        semi: true,
+      },
+      unreachableDefinitions: false,
+    });
+
+    const segmentPath = path.join(TYPES_DIR, 'segment.ts');
+    fs.writeFileSync(segmentPath, segmentTs);
+    console.log(`Segment interface saved to ${segmentPath}`);
+  }
+
+  // Generate specific segment type interfaces
+  const segmentTypes = ['git', 'path', 'time', 'battery', 'os'];
+
+  for (const type of segmentTypes) {
+    if (schema.definitions && schema.definitions[`${type.charAt(0).toUpperCase() + type.slice(1)}Segment`]) {
+      const typeSchema = {
+        ...schema.definitions[`${type.charAt(0).toUpperCase() + type.slice(1)}Segment`],
+        $schema: schema.$schema,
+        definitions: schema.definitions,
+      };
+
+      const typeTs = await compile(typeSchema, `${type.charAt(0).toUpperCase() + type.slice(1)}Segment`, {
+        bannerComment: `
+/**
+ * This file was automatically generated from the Oh My Posh schema.
+ * DO NOT MODIFY IT BY HAND.
+ *
+ * Generated on: ${new Date().toISOString()}
+ */`,
+        style: {
+          singleQuote: true,
+          semi: true,
+        },
+        unreachableDefinitions: false,
+      });
+
+      const typePath = path.join(TYPES_DIR, `${type}Segment.ts`);
+      fs.writeFileSync(typePath, typeTs);
+      console.log(`${type.charAt(0).toUpperCase() + type.slice(1)}Segment interface saved to ${typePath}`);
+    }
   }
 }
 

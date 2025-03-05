@@ -140,10 +140,10 @@ const BlockList: React.FC<{
         startIcon={<AddIcon />}
         onClick={onAddBlock}
         sx={{ mt: 1 }}
-      ></Button>
-      Add Block
-    </Button>
-    </Box >
+      >
+        Add Block
+      </Button>
+    </Box>
   );
 };
 
@@ -635,10 +635,11 @@ const VisualBuilder: React.FC = () => {
                   onChange={handleUpdateBlock}
                 />
               ) : (
-                <Typography variant="body1" color="textSecondary" sx={{ textAlign: 'center', py: 4 }}></Typography>
+                <Typography variant="body1" color="textSecondary" sx={{ textAlign: 'center', py: 4 }}>
                   No block selected. Add or select a block to edit its properties.
           </Typography>
           )
+
           ) : (
           selectedSegmentIndex !== null && selectedSegmentIndex < segments.length ? (
           <SegmentEditor
@@ -648,39 +649,39 @@ const VisualBuilder: React.FC = () => {
             onChange={(updatedSegment) => handleUpdateSegment(selectedSegmentIndex, updatedSegment)}
           />
           ) : (
-          <Typography variant="body1" color="textSecondary" sx={{ textAlign: 'center', py: 4 }}></Typography>
+          <Typography variant="body1" color="textSecondary" sx={{ textAlign: 'center', py: 4 }}>
           Select a segment to edit its properties or add a new segment.
-        </Typography>
+          </Typography>
         )
-            );}
-      </Paper>
+          )}
+    </Paper>
+  </Grid>
     </Grid>
-      </Grid >
 
-  {/* Global validation errors */ }
+{/* Global validation errors */}
 {
   hasGlobalErrors && (
-        <Box sx={{ mb: 2 }}></Box>
-          <Alert
-            severity="error"
-            icon={<ErrorIcon fontSize="inherit" />}
-            action={
-              <Button
-                color="inherit"
-                size="small"
-                onClick={() => setShowGlobalErrors(!showGlobalErrors)}
-              >
-                {showGlobalErrors ? 'Hide' : 'Show'} Details
-              </Button>
-            }
-          ></Alert>
-            Your theme has { globalErrors.length } validation { globalErrors.length === 1 ? 'issue' : 'issues' }
-          </Alert >
-    <Collapse in={showGlobalErrors}>
-      <ValidationErrorDisplay maxHeight={150} />
-    </Collapse>
-        </Box >
-      )
+    <Box sx={{ mb: 2 }}>
+      <Alert
+        severity="error"
+        icon={<ErrorIcon fontSize="inherit" />}
+        action={
+          <Button
+            color="inherit"
+            size="small"
+            onClick={() => setShowGlobalErrors(!showGlobalErrors)}
+          >
+            {showGlobalErrors ? 'Hide' : 'Show'} Details
+          </Button>
+        }
+      >
+        Your theme has {globalErrors.length} validation {globalErrors.length === 1 ? 'issue' : 'issues'}
+      </Alert>
+      <Collapse in={showGlobalErrors}>
+        <ValidationErrorDisplay maxHeight={150} />
+      </Collapse>
+    </Box>
+  )
 }
 
 {/* Segment Type Selector Dialog */ }
@@ -717,7 +718,7 @@ const VisualBuilder: React.FC = () => {
   )
 }
 
-{/* Block Type Selector Dialog */ }
+{/* Block Type Selector Dialog */}
 {
   showBlockSelector && (
     <Box
@@ -744,26 +745,24 @@ const VisualBuilder: React.FC = () => {
           m: 2,
         }}
         onClick={(e) => e.stopPropagation()}
-      ></Box>
-      <BlockSelector onSelect={handleSelectBlock} />
+      >
+        <BlockSelector onSelect={handleSelectBlock} />
+      </Box>
     </Box>
-        </Box >
-      )
+  )
 }
 
-{/* Error Handling */ }
+{/* Error Handling */}
       <Snackbar
         open={!!error}
         autoHideDuration={6000}
         onClose={() => setError(null)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-
-      </Snackbar>
         <Alert onClose={() => setError(null)} severity="error" sx={{ width: '100%' }}>
           {error}
         </Alert>
-      </Snackbar >
+      </Snackbar>
     </Box >
   );
 };

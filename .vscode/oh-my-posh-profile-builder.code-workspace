@@ -1,0 +1,27 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"liveServer.settings.root": "/build",
+		"liveServer.settings.port": 5500,
+		"liveServer.settings.NoBrowser": false,
+		"liveServer.settings.ignoreFiles": [
+			".vscode/**",
+			"**/*.scss",
+			"**/*.sass",
+			"**/*.ts",
+			"**/*.tsx",
+			"node_modules/**",
+			".tasks/**"
+		],
+		"github.copilot.chat.commitMessageGeneration.instructions": [
+			{
+				"file": ".github/copilot/prompts/commit-message-instructions.md"
+			}
+		],
+		"typescript.tsdk": "node_modules\\typescript\\lib"
+	}
+}

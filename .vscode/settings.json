@@ -1,7 +1,6 @@
 {
   "liveServer.settings.root": "/build",
   "liveServer.settings.port": 5500,
-  "liveServer.settings.CustomBrowser": "chrome",
   "liveServer.settings.NoBrowser": false,
   "liveServer.settings.ignoreFiles": [
     ".vscode/**",
@@ -11,5 +10,6 @@
     "**/*.tsx",
     "node_modules/**",
     ".tasks/**"
-  ]
+  ],
+  "typescript.tsdk": "node_modules\\typescript\\lib"
 }

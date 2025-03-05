@@ -1,399 +1,307 @@
-import React, { useMemo, useEffect } from 'react';
-import {
-  Box,
-  Typography,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Paper,
-  FormHelperText,
-  Grid,
-  Divider,
-} from '@mui/material';
-import { SegmentUiConfig } from '../../utils/dynamicSegmentGenerator';
-import { ColorPicker } from '../ColorPicker';
-import { useValidation } from '../../contexts/ValidationContext';
-import FormFieldValidation from '../FormFieldValidation';
-import PropertyGroupRenderer from './PropertyGroupRenderer';
-import ControlFactory from './ControlFactory';
-import { SchemaPropertyExtractor } from '../../utils/schemaPropertyExtractor';
+import React, { useMemo } from 'react';
+import { Box, Typography } from '@mui/material';
+// Import from the actual location of segmentTypes module
+import { getSegmentDisplayName } from '../../generated/segmentTypes';
+// Import from the actual location of IconRenderer component
+import IconRenderer from '../IconRenderer';
 
 interface DynamicSegmentFactoryProps {
   type: string;
-  segmentConfig: any;
-  onChange: (updatedConfig: any) => void;
-  segmentIndex: number;
-  blockIndex: number;
-  schema?: any; // Optional schema to use for property extraction
+  config: any;
+  foreground: string;
+  background: string;
+  style?: string;
+  schema: any;
 }
 
 /**
- * Enhanced factory component for dynamic segment configuration
- * This version integrates with SchemaPropertyExtractor for better schema handling
+ * A factory component that dynamically renders segment visualizations based on schema definitions
+ * This replaces the hardcoded SegmentFactory approach with a dynamic schema-based approach
  */
 const DynamicSegmentFactory: React.FC<DynamicSegmentFactoryProps> = ({
   type,
-  segmentConfig,
-  onChange,
-  segmentIndex,
-  blockIndex,
+  config,
+  foreground,
+  background,
   schema
 }) => {
-  const { getErrorsForPath } = useValidation();
-  const basePath = `/blocks/${blockIndex}/segments/${segmentIndex}`;
-
-  // Create UI configuration from schema if available
-  const uiConfig = useMemo(() => {
-    if (schema) {
-      // Extract properties from schema
-      try {
-        const extractor = new SchemaPropertyExtractor(schema);
-        const properties = extractor.extractSegmentProperties(type);
-
-        // Group properties
-        const appearanceProps = properties.filter(p =>
-          ['style', 'foreground', 'background', 'powerline_symbol'].includes(p.name)
-        );
-
-        const contentProps = properties.filter(p =>
-          !['style', 'foreground', 'background', 'powerline_symbol', 'type'].includes(p.name)
-        );
-
-        // Create property groups
-        const propertyGroups = {
-          content: {
-            title: 'Content',
-            properties: contentProps.map(p => p.name)
-          }
-        };
-
-        return {
-          type,
-          name: type.charAt(0).toUpperCase() + type.slice(1),
-          description: `Configuration for ${type} segment`,
-          properties: [...contentProps],
-          propertyGroups
-        } as SegmentUiConfig;
-      } catch (error) {
-        console.error('Error extracting properties from schema:', error);
-      }
-    }
-
-    // Fall back to placeholder implementation in generateSegmentUiConfig
-    const placeholderConfig = {
-      type,
-      name: type.charAt(0).toUpperCase() + type.slice(1),
-      description: `Configuration for ${type} segment`,
-      properties: [],
-      propertyGroups: {}
-    } as SegmentUiConfig;
-
-    return placeholderConfig;
-  }, [schema, type]);
-
-  // Apply defaults from schema if segment is new
-  useEffect(() => {
-    if (Object.keys(segmentConfig).length <= 2 && uiConfig) {
-      // This appears to be a new segment, so apply defaults from schema
-      const defaults = uiConfig.properties.reduce((acc, prop) => {
-        if (prop.defaultValue !== undefined) {
-          if (prop.name.includes('.')) {
-            // Handle nested properties
-            const parts = prop.name.split('.');
-            let current = acc;
-
-            // Create nested structure
-            for (let i = 0; i < parts.length - 1; i++) {
-              if (!current[parts[i]]) {
-                current[parts[i]] = {};
-              }
-              current = current[parts[i]];
-            }
-
-            // Set the value
-            current[parts[parts.length - 1]] = prop.defaultValue;
-          } else {
-            // Set direct property
-            acc[prop.name] = prop.defaultValue;
-          }
-        }
-        return acc;
-      }, {} as Record<string, any>);
-
-      // Apply defaults
-      onChange({
-        ...segmentConfig,
-        ...defaults,
-        style: segmentConfig.style || 'powerline',
-        foreground: segmentConfig.foreground || '#ffffff',
-        background: segmentConfig.background || getDefaultBackgroundColor(type)
-      });
-    }
-  }, [segmentConfig, uiConfig, onChange, type]);
-
-  // Get a default background color based on segment type
-  const getDefaultBackgroundColor = (type: string): string => {
-    // Color mapping for different segment types
-    const colorMap: Record<string, string> = {
-      path: '#61AFEF',
-      git: '#C678DD',
-      time: '#98C379',
-      battery: '#E5C07B',
-      os: '#E06C75',
-      text: '#56B6C2',
-      command: '#ABB2BF'
-    };
-
-    return colorMap[type] || '#444444';
+  // Common style wrapper for all segments
+  const containerStyle = {
+    padding: '0.5rem 1rem',
+    backgroundColor: background,
+    color: foreground,
+    display: 'flex',
+    alignItems: 'center',
+    fontFamily: 'monospace',
+    minHeight: '2rem',
   };
 
-  // Handle property changes - Fixed to remove validateValue call
-  const handlePropertyChange = (propertyName: string, value: any) => {
-    if (propertyName.includes('.')) {
-      // Handle nested properties
-      const parts = propertyName.split('.');
-      const updatedConfig = { ...segmentConfig };
-      let current = updatedConfig;
-
-      // Navigate and create the object structure
-      for (let i = 0; i < parts.length - 1; i++) {
-        if (!current[parts[i]]) {
-          current[parts[i]] = {};
-        }
-        current = current[parts[i]];
-      }
-
-      // Set the value
-      current[parts[parts.length - 1]] = value;
-      onChange(updatedConfig);
-      // Removed validateValue call as it doesn't exist
-    } else {
-      // Handle direct property
-      onChange({
-        ...segmentConfig,
-        [propertyName]: value
-      });
-      // Removed validateValue call as it doesn't exist
+  // Use the schema to determine segment visualization
+  const segmentDisplay = useMemo(() => {
+    if (!schema) {
+      return (
+        <Typography variant="body2" component="span">
+          {getSegmentDisplayName(type)}
+        </Typography>
+      );
     }
-  };
 
-  // If no properties defined, show a placeholder
-  if (!uiConfig || uiConfig.properties.length === 0) {
-    return (
-      <Paper sx={{ p: 2 }}>
-        <Typography variant="h6" gutterBottom>
-          {type.charAt(0).toUpperCase() + type.slice(1)} Configuration
+    // Try to find the segment definition in the schema
+    const segmentDef = findSegmentInSchema(schema, type);
+
+    if (!segmentDef) {
+      return (
+        <Typography variant="body2" component="span">
+          {getSegmentDisplayName(type)}
         </Typography>
-        <Typography variant="body2" color="text.secondary" paragraph>
-          No configurable properties found for this segment type.
-        </Typography>
+      );
+    }
 
-        {/* Default segment appearance options */}
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="subtitle1" gutterBottom>
-            Appearance
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="caption" gutterBottom>
-                Foreground Color
-                <FormFieldValidation path={`${basePath}/foreground`} />
+    // Special handling for different segment types
+    switch (type) {
+      case 'git':
+        return (
+          <>
+            {config.properties?.branch_icon && (
+              <Typography component="span" sx={{ mr: 0.5, fontSize: '1rem' }}>
+                {config.properties.branch_icon}
               </Typography>
-              <ColorPicker
-                color={segmentConfig.foreground || '#ffffff'}
-                onChange={(color) => handlePropertyChange('foreground', color)}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <Typography variant="caption" gutterBottom>
-                Background Color
-                <FormFieldValidation path={`${basePath}/background`} />
-              </Typography>
-              <ColorPicker
-                color={segmentConfig.background || '#000000'}
-                onChange={(color) => handlePropertyChange('background', color)}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <FormControl
-                fullWidth
-                size="small"
-                error={!!getErrorsForPath(`${basePath}/style`).length}
-              >
-                <InputLabel>Segment Style</InputLabel>
-                <Select
-                  value={segmentConfig.style || 'plain'}
-                  label="Segment Style"
-                  onChange={(e) => handlePropertyChange('style', e.target.value)}
-                  endAdornment={<FormFieldValidation path={`${basePath}/style`} />}
-                >
-                  <MenuItem value="plain">Plain</MenuItem>
-                  <MenuItem value="powerline">Powerline</MenuItem>
-                  <MenuItem value="diamond">Diamond</MenuItem>
-                </Select>
-                <FormHelperText>
-                  Visual style of the segment
-                </FormHelperText>
-              </FormControl>
-            </Grid>
-
-            {/* Conditional powerline symbol field */}
-            {segmentConfig.style === 'powerline' && (
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Powerline Symbol"
-                  value={segmentConfig.powerline_symbol || ''}
-                  onChange={(e) => handlePropertyChange('powerline_symbol', e.target.value)}
-                  size="small"
-                  error={!!getErrorsForPath(`${basePath}/powerline_symbol`).length}
-                  helperText="Symbol to use for the powerline style (e.g. \uE0B0)"
-                  InputProps={{
-                    endAdornment: <FormFieldValidation path={`${basePath}/powerline_symbol`} />
-                  }}
-                />
-              </Grid>
             )}
-          </Grid>
-        </Box>
-      </Paper>
-    );
+            <Typography variant="body2" component="span">
+              main
+            </Typography>
+            {config.properties?.display_status && (
+              <Typography variant="body2" component="span" sx={{ ml: 1 }}>
+                +2 ~1 -0
+              </Typography>
+            )}
+          </>
+        );
+
+      case 'path':
+        return (
+          <>
+            {config.folderIcon && (
+              <Typography component="span" sx={{ mr: 0.5, fontSize: '1rem' }}>
+                {config.folderIcon}
+              </Typography>
+            )}
+            <Typography variant="body2" component="span">
+              {renderPathPreview(config)}
+            </Typography>
+          </>
+        );
+
+      case 'battery':
+        return (
+          <>
+            <Typography component="span" sx={{ mr: 0.5, fontSize: '1rem' }}>
+              {getBatteryIcon(config.percentage, config.charging)}
+            </Typography>
+            {config.showPercentage && (
+              <Typography variant="body2" component="span">
+                {config.percentage || 100}%
+              </Typography>
+            )}
+          </>
+        );
+
+      case 'os':
+        return (
+          <>
+            <IconRenderer iconValue={getOsIcon(config)} />
+          </>
+        );
+
+      case 'time':
+        return (
+          <>
+            {config.showIcons && (
+              <Typography component="span" sx={{ mr: 0.5, fontSize: '1rem' }}>
+                {config.showDate ? '📅' : '⏰'}
+              </Typography>
+            )}
+            <Typography variant="body2" component="span">
+              {renderTimePreview(config)}
+            </Typography>
+          </>
+        );
+
+      case 'text':
+        return (
+          <>
+            {config.prefix && (
+              <Typography variant="body2" component="span" sx={{ mr: 0.5 }}>
+                {config.prefix}
+              </Typography>
+            )}
+            <Typography variant="body2" component="span">
+              {config.text || 'Sample Text'}
+            </Typography>
+            {config.suffix && (
+              <Typography variant="body2" component="span" sx={{ ml: 0.5 }}>
+                {config.suffix}
+              </Typography>
+            )}
+          </>
+        );
+
+      case 'spotify':
+        return (
+          <>
+            {config.showIcon && (
+              <Typography component="span" sx={{ mr: 0.5, fontSize: '1rem' }}>
+                {config.playing ? '▶️' : '⏸️'}
+              </Typography>
+            )}
+            <Typography variant="body2" component="span">
+              {config.songName || 'Not playing'}
+              {config.showArtist && config.artist && (
+                <Typography variant="body2" component="span" sx={{ ml: 0.5, opacity: 0.8 }}>
+                  - {config.artist}
+                </Typography>
+              )}
+            </Typography>
+          </>
+        );
+
+      case 'weather':
+        return (
+          <>
+            <Typography component="span" sx={{ mr: 0.5, fontSize: '1rem' }}>
+              {getWeatherIcon(config.condition)}
+            </Typography>
+            <Typography variant="body2" component="span">
+              {config.temperature || 22}°{config.unit || 'C'}
+              {config.showCity && config.city && (
+                <Typography variant="body2" component="span" sx={{ ml: 0.5, opacity: 0.8 }}>
+                  ({config.city})
+                </Typography>
+              )}
+            </Typography>
+          </>
+        );
+
+      default:
+        // For any other segment type, just display the name
+        return (
+          <Typography variant="body2" component="span">
+            {getSegmentDisplayName(type)}
+          </Typography>
+        );
+    }
+  }, [type, config, schema]);
+
+  return <Box sx={containerStyle}>{segmentDisplay}</Box>;
+};
+
+// Helper function to find a segment definition in the schema
+const findSegmentInSchema = (schema: any, segmentType: string) => {
+  if (!schema || !schema.definitions) return null;
+
+  // Look for segment definitions
+  const segmentDef = schema.definitions.segment;
+  if (!segmentDef) return null;
+
+  // Look for the specific segment type
+  for (const key in schema.definitions) {
+    if (key.toLowerCase().includes(segmentType.toLowerCase())) {
+      return schema.definitions[key];
+    }
   }
 
-  // Render the full UI with property groups
-  return (
-    <Paper sx={{ p: 2 }}>
-      <Typography variant="h6" gutterBottom>
-        {uiConfig.name} Configuration
-      </Typography>
+  return null;
+};
 
-      <Typography variant="body2" color="text.secondary" paragraph>
-        {uiConfig.description}
-      </Typography>
+// Helper function to render path preview
+const renderPathPreview = (config: any) => {
+  const style = config.style || 'folder';
 
-      {/* Render standard appearance options */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle1" gutterBottom>
-          Appearance
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
+  switch (style) {
+    case 'folder':
+      return 'oh-my-posh';
+    case 'full':
+      return '/Users/username/projects/oh-my-posh';
+    case 'short':
+      return '~/p/oh-my-posh';
+    default:
+      return 'oh-my-posh';
+  }
+};
 
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
-            <Typography variant="caption" gutterBottom>
-              Foreground Color
-              <FormFieldValidation path={`${basePath}/foreground`} />
-            </Typography>
-            <ColorPicker
-              color={segmentConfig.foreground || '#ffffff'}
-              onChange={(color) => handlePropertyChange('foreground', color)}
-            />
-          </Grid>
+// Helper function to get battery icon based on percentage and charging state
+const getBatteryIcon = (percentage: number = 100, charging: boolean = false) => {
+  if (charging) {
+    return '🔌';
+  }
 
-          <Grid item xs={12} sm={6}>
-            <Typography variant="caption" gutterBottom>
-              Background Color
-              <FormFieldValidation path={`${basePath}/background`} />
-            </Typography>
-            <ColorPicker
-              color={segmentConfig.background || '#000000'}
-              onChange={(color) => handlePropertyChange('background', color)}
-            />
-          </Grid>
+  if (percentage <= 10) {
+    return '🪫';
+  } else if (percentage <= 25) {
+    return '🔋';
+  } else if (percentage <= 50) {
+    return '🔋';
+  } else if (percentage <= 75) {
+    return '🔋';
+  } else {
+    return '🔋';
+  }
+};
 
-          <Grid item xs={12}>
-            <FormControl
-              fullWidth
-              size="small"
-              error={!!getErrorsForPath(`${basePath}/style`).length}
-            >
-              <InputLabel>Segment Style</InputLabel>
-              <Select
-                value={segmentConfig.style || 'plain'}
-                label="Segment Style"
-                onChange={(e) => handlePropertyChange('style', e.target.value)}
-                endAdornment={<FormFieldValidation path={`${basePath}/style`} />}
-              >
-                <MenuItem value="plain">Plain</MenuItem>
-                <MenuItem value="powerline">Powerline</MenuItem>
-                <MenuItem value="diamond">Diamond</MenuItem>
-              </Select>
-              <FormHelperText>
-                Visual style of the segment
-              </FormHelperText>
-            </FormControl>
-          </Grid>
+// Helper function to get OS icon
+const getOsIcon = (config: any) => {
+  if (config.properties?.windows) return config.properties.windows;
+  if (config.properties?.macos) return config.properties.macos;
+  if (config.properties?.linux) return config.properties.linux;
+  if (config.properties?.ubuntu) return config.properties.ubuntu;
 
-          {/* Conditional powerline symbol field */}
-          {segmentConfig.style === 'powerline' && (
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Powerline Symbol"
-                value={segmentConfig.powerline_symbol || ''}
-                onChange={(e) => handlePropertyChange('powerline_symbol', e.target.value)}
-                size="small"
-                error={!!getErrorsForPath(`${basePath}/powerline_symbol`).length}
-                helperText="Symbol to use for the powerline style (e.g. \uE0B0)"
-                InputProps={{
-                  endAdornment: <FormFieldValidation path={`${basePath}/powerline_symbol`} />
-                }}
-              />
-            </Grid>
-          )}
-        </Grid>
-      </Box>
+  return '\uf17a'; // Default Windows icon
+};
 
-      {/* Render content property groups */}
-      {Object.entries(uiConfig.propertyGroups).map(([groupKey, group]) => {
-        const groupProperties = uiConfig.properties.filter(
-          p => group.properties.includes(p.name)
-        );
+// Helper function to get weather icon based on condition
+const getWeatherIcon = (condition: string = 'Sunny') => {
+  const conditionLower = condition.toLowerCase();
 
-        if (groupProperties.length === 0) return null;
+  if (conditionLower.includes('sun') || conditionLower.includes('clear')) {
+    return '☀️';
+  } else if (conditionLower.includes('cloud')) {
+    return '☁️';
+  } else if (conditionLower.includes('rain')) {
+    return '🌧️';
+  } else if (conditionLower.includes('snow')) {
+    return '❄️';
+  } else {
+    return '🌤️';
+  }
+};
 
-        return (
-          <Box key={groupKey} sx={{ mb: 3 }}>
-            <Typography variant="subtitle1" gutterBottom>
-              {group.title}
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
+// Helper function to render time preview
+const renderTimePreview = (config: any) => {
+  const now = new Date();
 
-            <Grid container spacing={2}>
-              {groupProperties.map((property) => (
-                <Grid item xs={12} sm={6} key={property.name}>
-                  <ControlFactory
-                    property={property}
-                    value={
-                      property.name.includes('properties.')
-                        ? segmentConfig.properties?.[property.name.replace('properties.', '')]
-                        : segmentConfig[property.name]
-                    }
-                    onChange={(value) => {
-                      if (property.name.includes('properties.')) {
-                        const propName = property.name.replace('properties.', '');
-                        const updatedProperties = {...(segmentConfig.properties || {}), [propName]: value};
-                        handlePropertyChange('properties', updatedProperties);
-                      } else {
-                        handlePropertyChange(property.name, value);
-                      }
-                    }}
-                    validationPath={`${basePath}/${property.name}`}
-                  />
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
-        );
-      })}
-    </Paper>
-  );
+  let result = '';
+
+  if (config.showTime !== false) {
+    // Format: HH:mm:ss
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+
+    result += `${hours}:${minutes}:${seconds}`;
+  }
+
+  if (config.showDate) {
+    // Format: MMM dd, yyyy
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const month = months[now.getMonth()];
+    const day = now.getDate().toString().padStart(2, '0');
+    const year = now.getFullYear();
+
+    if (result) result += ' ';
+    result += `${month} ${day}, ${year}`;
+  }
+
+  return result || 'HH:mm:ss';
 };
 
 export default DynamicSegmentFactory;

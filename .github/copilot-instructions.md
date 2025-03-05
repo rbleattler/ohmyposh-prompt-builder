@@ -1,43 +1,56 @@
 # GitHub Copilot Instructions for oh-my-posh Prompt Builder
 
-These instructions help GitHub Copilot assist with development work on the oh-my-posh prompt builder repository.
+This file provides specialized instructions for GitHub Copilot when working on this project.
+
+## Project Overview
+
+This is a visual prompt builder for [oh-my-posh](https://ohmyposh.dev/), allowing users to design and customize their terminal prompts through a visual interface. The application imports/exports JSON theme files compatible with oh-my-posh.
+
+## General Coding Guidelines
+
+Follow the project's established coding patterns with React/TypeScript. Use functional components with hooks rather than class components. Maintain type safety throughout the codebase.
+
+- Use TypeScript types/interfaces over any
+- Use Material UI (MUI) for UI components
+- Follow established error handling patterns
+- Write unit tests for new functionality
 
 ## Task Management
 
-This repository uses a structured task management system. When working with tasks:
+When working on tasks:
 
-1. **Creating new tasks:**
-   - Use the template at `.tasks/template.md`
-   - Generate a unique task ID using timestamp format: `YYYYMMDD-HHMMSS`
-   - Follow naming convention: `<priority>_<task_name>.md`
-   - Place in `.tasks` directory
+- Generate unique task IDs using timestamp format: `YYYYMMDD-HHMMSS`
+- Create task files in `.tasks` directory following naming convention `<priority>_<task_name>.md`
+- For subtasks, use `<priority>_<task_name>_<sub_task_priority>_<sub_task_name>.md` and reference parent task ID
+- Update statuses in front matter and add completion dates when done
+- Archive completed tasks to `.tasks/archive`
+- Reference task IDs in commit messages
 
-2. **Creating subtasks:**
-   - Use the template at `.tasks/template_subtask.md`
-   - Generate a unique subtask ID using timestamp format: `YYYYMMDD-HHMMSS`
-   - Reference the parent task ID in the `parentTaskId` field
-   - Follow naming convention: `<priority>_<task_name>_<sub_task_priority>_<sub_task_name>.md`
-   - Update the parent task's `subtasks` array with the new subtask ID
+See `.github/copilot/prompts/task-management.md` for detailed instructions on task management.
 
-3. **Updating task status:**
-   - Update status in front matter when changed
-   - Add completion date when done
+## Architecture
 
-4. **Completing tasks:**
-   - Move completed task and subtask files to `.tasks/archive`
-   - Update status and completion date
+The application uses:
 
-5. **Code Implementation:**
-   - Reference task file or task ID in commit messages
-   - Ensure all acceptance criteria are met
-   - Update task status as progress is made
+- React for UI components
+- TypeScript for type safety
+- Material UI for component library
+- Local storage for persisting configurations
+- JSON Schema for validation
 
-## Reference Files
+Components should be organized by feature/function. Shared utilities should go in the `src/utils` directory.
 
-- Task template: `.tasks/template.md`
-- Subtask template: `.tasks/template_subtask.md`
-- Coding standards: `.github/CONTRIBUTING.md`
-- Task examples: `.tasks/archive/README.md`
+## Project Structure
+
+- `.github/` - GitHub-related files including Copilot instructions
+- `.tasks/` - Task management files
+- `src/` - Source code
+  - `components/` - React components
+  - `contexts/` - React contexts for state management
+  - `factories/` - Factory components for dynamic UI generation
+  - `schemas/` - JSON Schema definitions
+  - `types/` - TypeScript type definitions
+  - `utils/` - Utility functions
 
 >[!IMPORTANT]
 >

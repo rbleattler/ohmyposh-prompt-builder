@@ -166,3 +166,93 @@ export function getSegmentPropertiesFromSchema(segmentType: string): PropertyDef
   // For now, just return the placeholder implementation
   return extractPropertiesFromSchema(segmentType);
 }
+
+/**
+ * Generate a dynamic segment based on schema and type
+ */
+export function generateDynamicSegment(type: string, config: any, schema: any): any {
+  // Find segment definition in schema
+  const segmentDefinition = findSegmentDefinition(schema, type);
+
+  if (!segmentDefinition) {
+    return {
+      type,
+      ...config
+    };
+  }
+
+  // Apply defaults from schema definition
+  const defaultProperties = extractDefaultProperties(segmentDefinition);
+
+  return {
+    type,
+    properties: {
+      ...defaultProperties,
+      ...config?.properties
+    },
+    ...config
+  };
+}
+
+/**
+ * Find a segment definition in the schema by type
+ */
+export function findSegmentDefinition(schema: any, segmentType: string): any {
+  if (!schema || !schema.definitions) return null;
+
+  // Look for an exact match first
+  const exactMatchKey = `${segmentType}Segment`.toLowerCase();
+  for (const key in schema.definitions) {
+    if (key.toLowerCase() === exactMatchKey) {
+      return schema.definitions[key];
+    }
+  }
+
+  // Look for a partial match
+  for (const key in schema.definitions) {
+    if (key.toLowerCase().includes(segmentType.toLowerCase())) {
+      return schema.definitions[key];
+    }
+  }
+
+  // Return the base segment definition if no specific one is found
+  return schema.definitions.segment || null;
+}
+
+/**
+ * Extract default properties from a segment definition
+ */
+export function extractDefaultProperties(definition: any): Record<string, any> {
+  if (!definition || !definition.properties || !definition.properties.properties) {
+    return {};
+  }
+
+  const props = definition.properties.properties;
+
+  if (!props.properties) {
+    return {};
+  }
+
+  const result: Record<string, any> = {};
+
+  // Extract default values
+  for (const propName in props.properties) {
+    if (props.properties[propName].default !== undefined) {
+      result[propName] = props.properties[propName].default;
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Format a property name to a readable label
+ */
+export function formatPropertyLabel(name: string): string {
+  return name
+    .replace(/_/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}

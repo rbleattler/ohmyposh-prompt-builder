@@ -1,16 +1,20 @@
 import React from 'react';
 import { Box, styled } from '@mui/material';
 import { useTheme } from '../../contexts/ThemeContext';
+import { Segment } from '../../types/schema';
+import { SegmentProps } from '../../types/schema/segmentProps';
 
 // Define props interface
 interface SegmentPreviewProps {
-  segment: any;
+  segment: Segment & { powerline_symbol?: string }; // Add the powerline_symbol property
   isFirst: boolean;
   isLast: boolean;
 }
 
 // Styled segment component
-const SegmentContainer = styled(Box)<{
+const SegmentContainer = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'bg' && prop !== 'fg' && prop !== 'isPlain'
+})<{
   bg: string;
   fg: string;
   isPlain: boolean;
@@ -27,7 +31,7 @@ const SegmentContainer = styled(Box)<{
 }));
 
 const SegmentPreview: React.FC<SegmentPreviewProps> = ({ segment, isFirst, isLast }) => {
-  // Use themeConfig instead of theme to match the ThemeContext property name
+  // Use the theme context
   const { themeConfig } = useTheme();
 
   const background = segment.background || '#000000';
@@ -59,6 +63,7 @@ const SegmentPreview: React.FC<SegmentPreviewProps> = ({ segment, isFirst, isLas
   const renderPowerlineDivider = () => {
     if (style !== 'powerline' || isLast) return null;
 
+    // Use the powerline_symbol from segment or a default
     const symbol = segment.powerline_symbol || '\uE0B0';
 
     return (

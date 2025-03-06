@@ -14,7 +14,7 @@ As a user of the oh-my-posh prompt builder, I want to ensure that the prompt con
 
 ## Description
 
-The oh-my-posh application defines a JSON schema for theme configuration at https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json. This task involves implementing schema validation and using the schema to ensure the builder generates valid configurations. Additionally, we should use the schema to auto-generate appropriate types and form components for block and segment configuration.
+The oh-my-posh application defines a JSON schema for theme configuration at <https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json>. This task involves implementing schema validation and using the schema to ensure the builder generates valid configurations. Additionally, we should use the schema to auto-generate appropriate types and form components for block and segment configuration.
 
 ## Acceptance Criteria
 

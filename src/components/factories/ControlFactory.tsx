@@ -15,9 +15,9 @@ import {
 } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { PropertyDefinition, PropertyType } from '../../utils/dynamicSegmentGenerator';
-import { ColorPicker } from '../ColorPicker';
-import FormFieldValidation from '../FormFieldValidation';
-import IconPicker from '../IconPicker';
+import { ColorPicker } from '../editor/ColorPicker';
+import FormFieldValidation from '../editor/FormFieldValidation';
+import IconPicker from '../editor/IconPicker';
 
 interface ControlFactoryProps {
   property: PropertyDefinition;

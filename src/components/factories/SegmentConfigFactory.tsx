@@ -1,6 +1,6 @@
 import React from 'react';
-import { getSegmentDefaultProperties, getSegmentDisplayName } from '../generated/segmentTypes';
-import { SegmentConfigFactoryWrapper } from './factories/SegmentFactoryWrapper';
+import { getSegmentDefaultProperties } from '../../generated/segmentTypes';
+import { SegmentConfigFactoryWrapper } from '../factories/SegmentFactoryWrapper';
 
 interface SegmentConfigFactoryProps {
   type: string;

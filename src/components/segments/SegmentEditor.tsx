@@ -13,10 +13,10 @@ import {
   Tab,
   Divider
 } from '@mui/material';
-import { ColorPicker } from './ColorPicker';
-import { useValidation } from '../contexts/ValidationContext';
-import FormFieldValidation from './FormFieldValidation';
-import ValidationErrorDisplay from './ValidationErrorDisplay';
+import { ColorPicker } from '../editor/ColorPicker';
+import { useValidation } from '../../contexts/ValidationContext';
+import FormFieldValidation from '../editor/FormFieldValidation';
+import ValidationErrorDisplay from '../ValidationErrorDisplay';
 
 interface SegmentEditorProps {
   segment: any;

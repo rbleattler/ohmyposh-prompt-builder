@@ -142,7 +142,7 @@ Thumbs.db
 *~
 
 # Ignore generated files
-src/generated/
+src/generated
 
 # Ignore build directory
 build/

@@ -67,7 +67,9 @@ export const getLastUpdatedFormatted = (dateString: string): string => {
   }
 };
 
-export default {
+const SchemaService = {
   useSchemaVersion,
   getLastUpdatedFormatted
 };
+
+export default SchemaService;

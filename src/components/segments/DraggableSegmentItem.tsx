@@ -4,7 +4,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import { useDrag, useDrop } from 'react-dnd';
-import { SegmentType } from './types/SegmentProps';
+import { SegmentType } from '../../types/schema/segmentProps';
 
 interface DraggableSegmentItemProps {
   segment: SegmentType;

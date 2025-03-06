@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Box, Button, Snackbar, Typography } from '@mui/material';
+import { Alert, Button, Snackbar, Typography } from '@mui/material';
 import { useSchemaVersion, getLastUpdatedFormatted } from '../services/SchemaService';
 
 interface SchemaUpdateNotificationProps {

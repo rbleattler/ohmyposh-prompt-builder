@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import axios from 'axios';
-import schemaUtils from '../utils/schemaUtils';
 
 // Define the schema context type
 interface SchemaContextType {

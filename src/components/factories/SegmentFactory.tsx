@@ -1,5 +1,5 @@
 import React from 'react';
-import { SegmentFactoryWrapper } from './factories/SegmentFactoryWrapper';
+import { SegmentFactoryWrapper } from '../factories/SegmentFactoryWrapper';
 
 interface SegmentFactoryProps {
   type: string;

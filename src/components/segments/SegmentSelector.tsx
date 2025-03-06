@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box, Paper, Typography, List, ListItem, ListItemButton, ListItemText, ListItemIcon } from '@mui/material';
-import { SEGMENT_TYPES } from '../generated/segmentTypes';
+import { Paper, Typography, List, ListItem, ListItemButton, ListItemText, ListItemIcon } from '@mui/material';
+import { SEGMENT_TYPES } from '../../generated/segmentTypes';
 
 interface SegmentSelectorProps {
   onSelect: (segmentType: string) => void;

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import SchemaCache from './SchemaCache';
 import DynamicSegmentFactory from './DynamicSegmentFactory';
 import { useSchema } from '../../contexts/SchemaContext';
@@ -17,7 +17,6 @@ interface SchemaBasedSegmentFactoryProps {
  */
 const SchemaBasedSegmentFactory: React.FC<SchemaBasedSegmentFactoryProps> = (props) => {
   const { schema, isLoading, error } = useSchema();
-  const cache = useMemo(() => SchemaCache.getInstance(), []);
 
   // Handle loading state
   if (isLoading) {

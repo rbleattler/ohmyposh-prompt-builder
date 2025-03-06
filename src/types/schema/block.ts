@@ -6,7 +6,7 @@
 // A minimal Block interface to prevent build errors
 export interface Block {
   type: string;
-  alignment?: 'left' | 'right';
+  alignment?: 'left' | 'right' | undefined;
   segments?: any[];
   newline?: boolean;
 }

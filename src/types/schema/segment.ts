@@ -10,4 +10,5 @@ export interface Segment {
   foreground?: string;
   background?: string;
   properties?: Record<string, any>;
+  powerline_symbol?: string; // Add powerline_symbol property
 }

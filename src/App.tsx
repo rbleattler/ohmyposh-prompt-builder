@@ -1,16 +1,16 @@
 import React from 'react';
 import { Box, CssBaseline, ThemeProvider as MuiThemeProvider, createTheme, Paper } from '@mui/material';
 // Make sure we're using the correct ThemeProvider
-import { ThemeProvider } from './contexts/ThemeContext';
-import { SchemaProvider } from './contexts/SchemaContext';
-import { ValidationProvider } from './contexts/ValidationContext';
-import VisualBuilder from './components/VisualBuilder';
-import JsonEditor from './components/JsonEditor';
-import TerminalPreview from './components/TerminalPreview';
-import ResizableLayout from './components/ResizableLayout';
+import { ThemeProvider } from 'contexts/ThemeContext';
+import { SchemaProvider } from 'contexts/SchemaContext';
+import { ValidationProvider } from 'contexts/ValidationContext';
+import VisualBuilder from 'components/editor/VisualBuilder';
+import JsonEditor from 'components/editor/JsonEditor';
+import TerminalPreview from 'components/preview/TerminalPreview';
+import ResizableLayout from 'components/layout/ResizableLayout';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import SchemaUpdateNotification from './components/SchemaUpdateNotification';
+import SchemaUpdateNotification from 'components/SchemaUpdateNotification';
 
 const darkTheme = createTheme({
   palette: {

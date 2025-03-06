@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import { validateThemeConfig } from '../utils/schemaValidation';
 import { useTheme } from './ThemeContext';
 
@@ -33,7 +33,7 @@ export function ValidationProvider({ children }: { children: ReactNode }) {
   const [isValid, setIsValid] = useState(true);
 
   // Validate the entire theme configuration
-  const validateConfig = () => {
+  const validateConfig = useCallback(() => {
     if (!themeConfig) {
       setErrors([]);
       setIsValid(true);
@@ -46,15 +46,13 @@ export function ValidationProvider({ children }: { children: ReactNode }) {
       setIsValid(result.valid);
     } catch (error) {
       console.error('Validation error:', error);
-      setErrors([
-        {
-          path: 'root',
-          message: `Schema validation failed: ${error instanceof Error ? error.message : String(error)}`
-        }
-      ]);
+      setErrors([{
+        path: 'root',
+        message: `Schema validation failed: ${error instanceof Error ? error.message : String(error)}`,
+      }]);
       setIsValid(false);
     }
-  };
+  }, [themeConfig]);
 
   // Clear all validation errors
   const clearErrors = () => {
@@ -75,7 +73,7 @@ export function ValidationProvider({ children }: { children: ReactNode }) {
   // Automatically validate when the theme changes
   useEffect(() => {
     validateConfig();
-  }, [themeConfig]);
+  }, [themeConfig, validateConfig]);
 
   // Create the context value
   const contextValue: ValidationContextValue = {

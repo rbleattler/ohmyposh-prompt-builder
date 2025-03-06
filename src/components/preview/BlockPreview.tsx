@@ -1,9 +1,10 @@
 import React from 'react';
-import { Box, Paper, styled } from '@mui/material';
+import { Box, styled } from '@mui/material';
 import SegmentPreview from './SegmentPreview';
+import { Block, Segment } from '../../types/schema';
 
 interface BlockPreviewProps {
-  block: any;
+  block: Block;
   isActive: boolean;
   onClick?: () => void;
 }
@@ -19,6 +20,7 @@ const BlockContainer = styled(Box)<{ alignment: string }>(({ alignment }) => ({
 
 const BlockPreview: React.FC<BlockPreviewProps> = ({ block, isActive, onClick }) => {
   const alignment = block.alignment || 'left';
+  const segments = block.segments || []; // Provide default empty array
 
   return (
     <BlockContainer
@@ -31,12 +33,12 @@ const BlockPreview: React.FC<BlockPreviewProps> = ({ block, isActive, onClick })
         borderRadius: '4px',
       }}
     >
-      {block.segments?.map((segment: any, index: number) => (
+      {segments.map((segment: Segment, index: number) => (
         <SegmentPreview
           key={index}
           segment={segment}
           isFirst={index === 0}
-          isLast={index === block.segments.length - 1}
+          isLast={index === segments.length - 1}
         />
       ))}
     </BlockContainer>

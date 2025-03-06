@@ -1,8 +1,7 @@
-import React, { useMemo } from 'react';
-import SchemaCache from './SchemaCache';
-import DynamicSegmentConfigFactory from './DynamicSegmentConfigFactory';
+import React from 'react';
 import { useSchema } from '../../contexts/SchemaContext';
 import { Box, Typography, CircularProgress, Paper } from '@mui/material';
+import DynamicSegmentConfigFactory from './DynamicSegmentConfigFactory';
 
 interface SchemaBasedConfigFactoryProps {
   type: string;
@@ -19,7 +18,6 @@ interface SchemaBasedConfigFactoryProps {
  */
 const SchemaBasedConfigFactory: React.FC<SchemaBasedConfigFactoryProps> = (props) => {
   const { schema, isLoading, error } = useSchema();
-  const cache = useMemo(() => SchemaCache.getInstance(), []);
 
   // Handle loading state
   if (isLoading) {

@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box, Typography, Tooltip } from '@mui/material';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import { useValidation } from '../contexts/ValidationContext';
-import { formatValidationPath } from '../utils/validationUtils';
+import { useValidation } from '../../contexts/ValidationContext';
+import { formatValidationPath } from '../../utils/validationUtils';
 
 interface FormFieldValidationProps {
   path: string;

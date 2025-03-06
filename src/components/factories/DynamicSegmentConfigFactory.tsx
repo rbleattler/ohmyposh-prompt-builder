@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   Box,
   Grid,
@@ -10,9 +10,8 @@ import {
   MenuItem,
   Paper
 } from '@mui/material';
-import { ColorPicker } from '../ColorPicker';
+import { ColorPicker } from '../editor/ColorPicker';
 import { SchemaControlMapper } from '../../utils/SchemaControlMapper';
-import FormFieldValidation from '../FormFieldValidation';
 import SchemaControlFactory from './SchemaControlFactory';
 
 interface DynamicSegmentConfigFactoryProps {
@@ -41,7 +40,7 @@ const DynamicSegmentConfigFactory: React.FC<DynamicSegmentConfigFactoryProps> = 
   schema
 }) => {
   const [segmentPropertyDef, setSegmentPropertyDef] = useState<any>(null);
-  const safeConfig = config || {};
+  const safeConfig = useMemo(() => config || {}, [config]);
 
   // Find the segment definition in the schema
   useEffect(() => {

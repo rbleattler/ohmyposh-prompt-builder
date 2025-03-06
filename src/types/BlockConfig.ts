@@ -1,4 +1,4 @@
-import { SegmentType } from '../components/types/SegmentProps';
+import { SegmentType } from '../types/schema/segmentProps';
 
 /**
  * Configuration for a block in oh-my-posh prompt

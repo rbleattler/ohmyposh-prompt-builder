@@ -27,9 +27,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
 import { PropertyType } from '../../utils/dynamicSegmentGenerator';
-import { ColorPicker } from '../ColorPicker';
-import FormFieldValidation from '../FormFieldValidation';
-import IconPicker from '../IconPicker';
+import { ColorPicker } from '../editor/ColorPicker';
+import FormFieldValidation from '../editor/FormFieldValidation';
+import IconPicker from '../editor/IconPicker';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { SchemaControlMapper } from '../../utils/SchemaControlMapper';
 

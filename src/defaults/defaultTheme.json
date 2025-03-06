@@ -1,36 +1,178 @@
 {
   "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
-  "version": 2,
-  "final_space": true,
+  "transient_prompt": {
+    "template": "\ue285 ",
+    "foreground": "#FEF5ED",
+    "background": "transparent"
+  },
+  "console_title_template": "{{ .Folder }}",
   "blocks": [
     {
       "type": "prompt",
       "alignment": "left",
       "segments": [
         {
-          "type": "path",
-          "style": "powerline",
-          "powerline_symbol": "\uE0B0",
-          "foreground": "#ffffff",
-          "background": "#61AFEF",
           "properties": {
-            "style": "folder"
-          }
+            "macos": "\uf179 ",
+            "postfix": "",
+            "ubuntu": "\uf31b ",
+            "windows": "\uf871 "
+          },
+          "leading_diamond": "\ue0b6",
+          "foreground": "#000",
+          "background": "#FEF5ED",
+          "type": "os",
+          "style": "diamond"
         },
         {
-          "type": "git",
-          "style": "powerline",
-          "powerline_symbol": "\uE0B0",
-          "foreground": "#193549",
-          "background": "#FFFB38",
           "properties": {
-            "branch_icon": "\uF126 ",
-            "display_status": true,
-            "display_stash_count": true,
-            "display_upstream_icon": true
-          }
+            "postfix": "",
+            "prefix": "\uf489 "
+          },
+          "leading_diamond": "<parentForeground,parentBackground>\ue0b2</>",
+          "trailing_diamond": "<background,background>\ue0b2</>",
+          "foreground": "parentBackground",
+          "background": "parentForeground",
+          "type": "shell",
+          "style": "diamond"
+        },
+        {
+          "properties": {
+            "postfix": "% ",
+            "prefix": "\uf85a CPU: ",
+            "template": "{{ round .PhysicalPercentUsed .Precision }}"
+          },
+          "leading_diamond": "<parentForeground,parentBackground>\ue0b2</>",
+          "trailing_diamond": "<background,background>\ue0b2</>",
+          "foreground": "parentBackground",
+          "background": "parentForeground",
+          "type": "sysinfo",
+          "style": "diamond"
+        },
+        {
+          "properties": {
+            "postfix": "GB \uf85a",
+            "prefix": " MEM: ",
+            "template": "{{ (div ((sub .PhysicalTotalMemory .PhysicalFreeMemory)|float64) 1000000000.0) }}/{{ (div .PhysicalTotalMemory 1000000000.0) }}"
+          },
+          "leading_diamond": "<parentForeground,parentBackground>\ue0b2</>",
+          "trailing_diamond": "<background,background>\ue0b2</>",
+          "foreground": "parentBackground",
+          "background": "parentForeground",
+          "type": "sysinfo",
+          "style": "diamond"
+        },
+        {
+          "properties": {
+            "style": "roundrock",
+            "threshold": 0
+          },
+          "leading_diamond": "<parentForeground,parentBackground>\ue0b2</>",
+          "trailing_diamond": "\ue0b4",
+          "foreground": "parentBackground",
+          "background": "parentForeground",
+          "type": "executiontime",
+          "style": "diamond"
+        }
+      ],
+      "newline": true
+    },
+    {
+      "type": "prompt",
+      "alignment": "right",
+      "segments": [
+        {
+          "properties": {
+            "cache_timeout": 1,
+            "http_timeout": 300,
+            "url": "https://wakatime.com/api/v1/users/current/summaries?start=today&end=today&api_key={{.Env.WAKATIME_API_KEY}}"
+          },
+          "leading_diamond": "\ue0b6",
+          "trailing_diamond": "<background,background>\ue0b2</>",
+          "foreground": "#d79717",
+          "background": "#000",
+          "type": "wakatime",
+          "style": "diamond"
+        },
+        {
+          "properties": {
+            "branch_icon": "\ue725 ",
+            "fetch_stash_count": true,
+            "fetch_status": true,
+            "fetch_upstream_icon": true,
+            "fetch_worktree_count": true,
+            "template": "{{ .UpstreamIcon }}{{ .HEAD }}{{ .BranchStatus }}{{ if .Working.Changed }} \uf044 {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }} \uf046 {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }} \uf692 {{ .StashCount }}{{ end }}"
+          },
+          "leading_diamond": "<parentForeground,parentBackground>\ue0b2</>",
+          "trailing_diamond": "\ue0b4",
+          "foreground": "parentBackground",
+          "background": "parentForeground",
+          "type": "git",
+          "style": "diamond"
         }
       ]
+    },
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "segments": [
+        {
+          "properties": {
+            "postfix": "",
+            "prefix": "",
+            "text": "\u256d\u2500"
+          },
+          "type": "text",
+          "style": "plain"
+        },
+        {
+          "properties": {
+            "postfix": "<#fff> \u232a</>",
+            "prefix": "<#fff>\uf489</> ",
+            "time_format": "15:04:05"
+          },
+          "foreground": "#d79717",
+          "type": "time",
+          "style": "plain"
+        },
+        {
+          "properties": {
+            "prefix": "",
+            "root_icon": "\ue5ff"
+          },
+          "type": "root",
+          "style": "plain"
+        },
+        {
+          "properties": {
+            "enable_hyperlink": true,
+            "folder_icon": "\uf07b ",
+            "folder_separator_icon": " \uf554 ",
+            "home_icon": "\uf7db ",
+            "style": "folder"
+          },
+          "type": "path",
+          "style": "plain"
+        }
+      ],
+      "newline": true
+    },
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "segments": [
+        {
+          "properties": {
+            "always_enabled": true,
+            "prefix": "",
+            "template": "\u2570\u2500"
+          },
+          "type": "text",
+          "style": "plain"
+        }
+      ],
+      "newline": true
     }
-  ]
+  ],
+  "version": 3
 }

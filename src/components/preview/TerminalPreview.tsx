@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography, styled, Theme } from '@mui/material'; // Add the proper imports
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 // Define styled components with proper types
 const Terminal = styled(Box)(({ theme }: { theme: Theme }) => ({

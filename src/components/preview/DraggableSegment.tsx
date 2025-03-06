@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
 import { Box } from '@mui/material';
 import { useDrag, useDrop } from 'react-dnd';
-import { SegmentType } from '../types/SegmentProps';
-import SegmentFactory from '../SegmentFactory';
+import { SegmentType } from '../../types/schema/segmentProps';
+import SegmentFactory from '../factories/SegmentFactory';
 
 interface DraggableSegmentProps {
   segment: SegmentType;

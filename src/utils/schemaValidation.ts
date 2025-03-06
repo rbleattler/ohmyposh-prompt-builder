@@ -118,8 +118,10 @@ export function validateBlock(blockConfig: any): {
   return { valid: true, errors: [] };
 }
 
-export default {
+const schemaValidation = {
   validateThemeConfig,
   validateSegment,
   validateBlock,
 };
+
+export default schemaValidation;

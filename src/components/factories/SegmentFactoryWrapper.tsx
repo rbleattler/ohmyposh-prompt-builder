@@ -34,7 +34,10 @@ export const SegmentConfigFactoryWrapper: React.FC<SegmentConfigFactoryWrapperPr
   return <SchemaBasedConfigFactory {...props} />;
 };
 
-export default {
+// Create a wrapper object for default export
+const FactoryWrappers = {
   SegmentFactoryWrapper,
   SegmentConfigFactoryWrapper
 };
+
+export default FactoryWrappers;

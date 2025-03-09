@@ -10,6 +10,7 @@ This is a visual prompt builder for [oh-my-posh](https://ohmyposh.dev/), allowin
 
 Follow the project's established coding patterns with React/TypeScript. Use functional components with hooks rather than class components. Maintain type safety throughout the codebase.
 
+- Do not modify generated files (any file which indicates it was automatically generated). Find the file that generates the code and work on that. Inquire with the user if there is no clear indication of the file that generates the code.
 - Use TypeScript types/interfaces over any
 - Use Material UI (MUI) for UI components
 - Follow established error handling patterns

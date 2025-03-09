@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const { compile } = require('json-schema-to-typescript');
 const { createHash } = require('crypto');
-const { generateSegmentTypesFile } = require('../src/utils/segmentTypeGenerator');
+import { generateSegmentTypesFile } from '../src/ompConfigVisualizer/utils/segmentTypeGenerator';
 
 // Schema URL for oh-my-posh
 const SCHEMA_URL = 'https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json';
@@ -241,7 +241,16 @@ ${imports}
 function generateSchemaService(): void {
   console.log('Generating schema service...');
 
-  const serviceContent = `import { useEffect, useState } from 'react';
+  const serviceContent = `/**
+ * This file was automatically generated from the Oh My Posh schema.
+ * DO NOT MODIFY IT BY HAND. Instead, modify the source JSONSchema file,
+ * and run the 'generate-schema-types' script to regenerate this file.
+ *
+ * Schema URL: ${SCHEMA_URL}
+ * Generated on: ${new Date().toISOString()}
+ */
+
+import { useEffect, useState } from 'react';
 
 /**
  * Schema version information
@@ -334,7 +343,7 @@ async function main(): Promise<void> {
     generateSchemaService();
 
     // Also generate segment types from the schema
-    await generateSegmentTypesFile();
+    generateSegmentTypesFile();
 
     console.log('Schema and segment type generation complete!');
   } catch (error) {

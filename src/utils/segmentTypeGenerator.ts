@@ -1,0 +1,78 @@
+import fs from 'fs';
+import path from 'path';
+import schemaFile from '../ompConfigVisualizer/schemas/schema.json'
+import { debug } from 'console';
+import { debuglog } from 'util';
+
+/**
+ * Generates an array of segment types by analyzing the Oh My Posh schema
+ * @returns Array of segment type strings
+ */
+export function generateSegmentTypes(): string[] {
+  try {
+
+    const schema = schemaFile;
+
+    if (!schema.definitions) {
+      console.error('Schema does not contain definitions section');
+      return [];
+    }
+
+    // Extract segment types from schema definitions
+    const segmentTypes: string[] = [];
+
+    // Look for entries that end with "Segment" in the definitions
+    Object.keys(schema.definitions).forEach(key => {
+      if (key.endsWith('Segment') && key !== 'Segment') {
+        // Write to debug log
+        // console.debug(`Found segment type: ${key}`);
+        debuglog(`Found segment type: ${key}`);
+        // Convert "GitSegment" to "git"
+        const segmentType = key.replace(/Segment$/, '').toLowerCase();
+        segmentTypes.push(segmentType);
+      }
+    });
+
+    // Also check if there are any explicitly defined types in the schema
+    if (schema.definitions.segment?.properties?.type?.enum) {
+      // Add any explicitly defined segment types
+      console.log('Found explicit segment types in schema');
+      const explicitTypes = schema.definitions.segment.properties.type.enum;
+      explicitTypes.forEach((type: string) => {
+        console.log(`Found explicit segment type: ${type}`);
+        if (!segmentTypes.includes(type)) {
+          segmentTypes.push(type);
+        }
+      });
+    }
+
+    if (segmentTypes.length === 0) {
+      console.warn('No segment types found in schema');
+    } else {
+      console.log(`Found ${segmentTypes.length} segment types: ${segmentTypes.join(', ')}`);
+    }
+
+    return segmentTypes;
+  } catch (error) {
+    console.error('Error generating segment types:', error);
+    return [];
+  }
+}
+
+export const generateSegmentTypesFile = () => {
+  // Get segment types from schema
+  const segmentTypes = generateSegmentTypes();
+
+  if (segmentTypes.length === 0) {
+    console.error('No segment types were found. Unable to generate segment types file.');
+    return;
+  }
+
+  const segmentTypeFilePath = path.resolve(__dirname, '../types/schema/segment.ts');
+  const segmentTypeContent = `export type SegmentType = ${segmentTypes.map(type => `'${type}'`).join(' | ')};`;
+
+  fs.writeFileSync(segmentTypeFilePath, segmentTypeContent);
+  console.log(`Segment types file generated at ${segmentTypeFilePath}`);
+};
+
+export default generateSegmentTypes;

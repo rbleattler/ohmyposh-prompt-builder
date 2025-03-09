@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ES6",
     "lib": [
       "dom",
       "dom.iterable",
@@ -19,13 +19,33 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "baseUrl": "src"
+    "baseUrl": "src",
+    "outDir": "./dist",
+    "rootDir": "./"
   },
   "include": [
-    "src"
-  ],
+    "src",
+    ".scratch/segmentTypeGenerator.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "tests/**/*.ts",
+    "tests/**/*.tsx"
+, ".scratch/dynamicTypeComponent.test.tsx", ".scratch/schemaTypeGenerator.test.tsx"  ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "build",
+    "coverage",
+    "dist",
+    ".scratch",
+    ".trash",
+    ".tasks",
+    ".husky",
+    ".github",
+    "*test*.js",
+    "*test*.jsx",
+    "*test*.ts",
+    "*test*.tsx",
+    "test*",
   ],
   "ts-node": {
     "transpileOnly": true,

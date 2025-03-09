@@ -1,6 +1,7 @@
 # Scratch/trash
 scratch/
 .scratch/
+.trash
 
 # Node modules
 node_modules

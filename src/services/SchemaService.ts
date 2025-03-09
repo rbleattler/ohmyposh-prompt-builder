@@ -1,3 +1,12 @@
+/**
+ * This file was automatically generated from the Oh My Posh schema.
+ * DO NOT MODIFY IT BY HAND. Instead, modify the source JSONSchema file,
+ * and run the 'generate-schema-types' script to regenerate this file.
+ *
+ * Schema URL: https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json
+ * Generated on: 2025-03-07T14:11:15.140Z
+ */
+
 import { useEffect, useState } from 'react';
 
 /**
@@ -67,9 +76,7 @@ export const getLastUpdatedFormatted = (dateString: string): string => {
   }
 };
 
-const SchemaService = {
+export default {
   useSchemaVersion,
   getLastUpdatedFormatted
 };
-
-export default SchemaService;

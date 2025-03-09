@@ -22,6 +22,12 @@
 				"file": ".github/copilot/prompts/commit-message-instructions.md"
 			}
 		],
-		"typescript.tsdk": "node_modules\\typescript\\lib"
-	}
+		"typescript.tsdk": "node_modules\\typescript\\lib",
+		"cSpell.words": [
+			"powerline"
+		],
+		"terminal.integrated.shellIntegration.environmentReporting": false,
+		"github.copilot.chat.terminalChatLocation": "chatView"
+	},
+
 }

@@ -1,5 +1,5 @@
 export {};
-import { generateSegmentTypesFile } from '../src/utils/segmentTypeGenerator';
+import { generateSegmentTypesFile } from '../src/ompConfigVisualizer/utils/segmentTypeGenerator';
 
 // Run the generation script
 async function main() {

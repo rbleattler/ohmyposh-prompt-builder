@@ -11,7 +11,7 @@ When creating new tasks:
 
 1. Use the template at `.tasks/template.md`
 2. Generate a unique task ID using timestamp format: `YYYYMMDD-HHMMSS`
-3. Follow naming convention: `<priority>_<task_name>.md`
+3. Follow naming convention: `<taskId>.md`
 4. Place in `.tasks` directory
 5. Update the front matter with relevant information:
 
@@ -32,7 +32,7 @@ When a task needs to be broken down:
 1. Use the template at `.tasks/template_subtask.md`
 2. Generate a unique subtask ID using timestamp format: `YYYYMMDD-HHMMSS`
 3. Reference the parent task ID in the `parentTaskId` field
-4. Follow naming convention: `<priority>_<task_name>_<sub_task_priority>_<sub_task_name>.md`
+4. Follow naming convention: `<taskId>.md`
 5. Update the parent task's `subtasks` array with the new subtask ID
 
 Subtasks should:

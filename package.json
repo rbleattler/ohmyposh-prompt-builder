@@ -18,7 +18,7 @@
     "@types/react-dom": "^18.0.9",
     "ajv": "^8.17.1",
     "ajv-formats": "^2.1.1",
-    "axios": "^1.8.1",
+    "axios": "^1.8.2",
     "date-fns": "^2.29.3",
     "json-schema-to-typescript": "^13.1.2",
     "monaco-editor": "^0.44.0",
